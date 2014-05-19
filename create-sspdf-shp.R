@@ -6,7 +6,7 @@ require(sp)
 require(rgdal)
 library(gsubfn)
 
-## See js/array.js for how to create these files
+## See js/array.js for how to create these json arrays
 
 ## The polygon long,lat coordinates that make up each cuadrante
 cuads <- fromJSON(file.path('js', 'cuads.json'))
@@ -77,4 +77,5 @@ df <- data.frame(id=unlist(dfnames),
                  row.names=unlist(dfnames))
 spp <- SpatialPolygonsDataFrame(SP, data = df)
 proj4string(spp) <- CRS("+proj=longlat +datum=WGS84")
-writeOGR(spp, "cuadrante-shp", "cuadrantes-sspdf", driver="ESRI Shapefile")
+writeOGR(spp, "cuadrante-shps", "cuadrantes-sspdf", driver = "ESRI Shapefile",
+         overwrite_layer = TRUE)
