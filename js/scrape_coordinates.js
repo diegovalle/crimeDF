@@ -1,21 +1,21 @@
-//http://201.144.220.174/pid/gps/cuadrantesWeb.php?delegacionsx=10
-//respuesta[1]=1
+// Node.js program to scrape the police cuadrantes as a JSON array
+// with the polygon coordinates, useable for creating a shapefile with
+// R
+// Author: Diego Valle-Jones
 
-
-//run http://201.144.220.174/pid/gps/cuadrantesWeb.php
+//http://201.144.220.174/pid/gps/cuadrantesWeb.php
 //http://201.144.220.174/pid/gps/showCuadrante2.php?delegacionsx=1
 
 
-//JSON.stringify(polys)
-//JSON.stringify(names)
-//JSON.stringify(msg)
+
 (function () {
     'use strict';
 
     var html = "http://201.144.220.174/pid/gps/showCuadrante2.php";
     
+    // Write the scraped array as a JSON string to a file
     function writeFile(fname, arr) {
-        fs.writeFile(fname, JSON.stringify(arr), function(err) {
+        fs.writeFile('js/' + fname, JSON.stringify(arr), function(err) {
             if(err) {
                 console.log(err);
             } else {
@@ -23,10 +23,17 @@
             }
         });
     };
-    //console.log(errors);
+    // polys == coordinates of the polygons (cuadrantes)
+    // names == the codes to uniquely id each cuadrante
+    // msg == the html that come with each cuadrante describing the cop and phone assigned
     var polys = [], names = [], msg = [];
+
     var http = require('http');
     var fs = require('fs');
+    // scrape the data from the police website page
+    // the official page with the interactive map is located at http://201.144.220.174/pid/gps/cuadrantesWeb.php?delegacionsx=10
+    // by analyzing the js in that page it turned out that they stored
+    // the cuadrante polygon coordinates in the page below:
     var request = http.get("http://201.144.220.174/pid/gps/showCuadrante2.php", function (res) {
         var data = '';
         res.on('data', function (chunk) {
