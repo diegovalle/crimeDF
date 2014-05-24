@@ -1,0 +1,263 @@
+<!DOCTYPE HTML>
+<!--
+	Strongly Typed 1.1 by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Crime in Mexico City</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<meta name="viewport" content="width=1040" />
+		<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600|Arvo:700" rel="stylesheet" type="text/css" />
+		<!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
+                <!-- Load c3.css -->
+                <link href="/css/c3.css" rel="stylesheet" type="text/css">
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.dropotron.min.js"></script>
+		<script src="js/config.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-panels.min.js"></script>
+                
+                <script src="http://d3js.org/d3.v3.min.js"></script>
+                <script src="http://d3js.org/topojson.v1.min.js"></script>
+                <script src="/js/c3.min.js"></script>
+
+                
+
+		<noscript>
+			<link rel="stylesheet" href="css/skel-noscript.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-desktop.css" />
+		</noscript>
+                <style>
+#legend-homicides {
+    padding: 0 0 0 .5em;
+}
+
+li.key {
+    border-top-width: 10px;
+    border-top-style: solid;
+    font-size: .75em;
+    text-align: left;
+    width: 10%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+ul.list-inline{
+margin-bottom: 0em;
+}
+
+.list-inline>li {
+display: inline-block;
+padding-right: 5px;
+padding-left: 0px;
+}
+
+.subdivisions {
+  fill: none;
+  stroke: #ddd;
+}
+ 
+.boundary {
+  fill: none;
+  stroke: #999;
+}
+ 
+.selected {
+  fill:black;
+}
+.chart-crime {
+  margin-top:60px;
+}
+.Bluesq0-9{border-top-color:rgb(247,251,255);fill:rgb(247,251,255)}
+.Bluesq1-9{border-top-color:rgb(222,235,247);fill:rgb(222,235,247)}
+.Bluesq2-9{border-top-color:rgb(198,219,239);fill:rgb(198,219,239)}
+.Bluesq3-9{border-top-color:rgb(158,202,225);fill:rgb(158,202,225)}
+.Bluesq4-9{border-top-color:rgb(107,174,214);fill:rgb(107,174,214)}
+.Bluesq5-9{border-top-color:rgb(66,146,198);fill:rgb(66,146,198)}
+.Bluesq6-9{border-top-color:rgb(33,113,181);fill:rgb(33,113,181)}
+.Bluesq7-9{border-top-color:rgb(8,81,156);fill:rgb(8,81,156)}
+.Bluesq8-9{border-top-color:rgb(8,48,107);fill:rgb(8,48,107)}
+
+.Redsq0-9{border-top-color:rgb(255,245,240);fill:rgb(255,245,240)}
+.Redsq1-9{border-top-color:rgb(254,224,210);fill:rgb(254,224,210)}
+.Redsq2-9{border-top-color:rgb(252,187,161);fill:rgb(252,187,161)}
+.Redsq3-9{border-top-color:rgb(252,146,114);fill:rgb(252,146,114)}
+.Redsq4-9{border-top-color:rgb(251,106,74);fill:rgb(251,106,74)}
+.Redsq5-9{border-top-color:rgb(239,59,44);fill:rgb(239,59,44)}
+.Redsq6-9{border-top-color:rgb(203,24,29);fill:rgb(203,24,29)}
+.Redsq7-9{border-top-color:rgb(165,15,21);fill:rgb(165,15,21)}
+.Redsq8-9{border-top-color:rgb(103,0,13);fill:rgb(103,0,13)}
+
+.Greensq0-9{border-top-color:rgb(247,252,245);fill:rgb(247,252,245)}
+.Greensq1-9{border-top-color:rgb(229,245,224);fill:rgb(229,245,224)}
+.Greensq2-9{border-top-color:rgb(199,233,192);fill:rgb(199,233,192)}
+.Greensq3-9{border-top-color:rgb(161,217,155);fill:rgb(161,217,155)}
+.Greensq4-9{border-top-color:rgb(116,196,118);fill:rgb(116,196,118)}
+.Greensq5-9{border-top-color:rgb(65,171,93);fill:rgb(65,171,93)}
+.Greensq6-9{border-top-color:rgb(35,139,69);fill:rgb(35,139,69)}
+.Greensq7-9{border-top-color:rgb(0,109,44);fill:rgb(0,109,44)}
+.Greensq8-9{border-top-color:rgb(0,68,27);fill:rgb(0,68,27)}
+
+.Purplesq0-9{border-top-color:rgb(252,251,253);fill:rgb(252,251,253)}
+.Purplesq1-9{border-top-color:rgb(239,237,245);fill:rgb(239,237,245)}
+.Purplesq2-9{border-top-color:rgb(218,218,235);fill:rgb(218,218,235)}
+.Purplesq3-9{border-top-color:rgb(188,189,220);fill:rgb(188,189,220)}
+.Purplesq4-9{border-top-color:rgb(158,154,200);fill:rgb(158,154,200)}
+.Purplesq5-9{border-top-color:rgb(128,125,186);fill:rgb(128,125,186)}
+.Purplesq6-9{border-top-color:rgb(106,81,163);fill:rgb(106,81,163)}
+.Purplesq7-9{border-top-color:rgb(84,39,143);fill:rgb(84,39,143)}
+.Purplesq8-9{border-top-color:rgb(63,0,125);fill:rgb(63,0,125)}
+</style>
+	</head>
+	<body class="homepage">
+
+		<!-- Header Wrapper -->
+			<div id="header-wrapper">
+						
+				<!-- Header -->
+					<div id="header" class="container">
+                                          <h2 id="homicide-title">Homicides - Total</h2>
+
+					  <div class="row">
+                                           
+					    <div class="4u">
+                                              <div id="map-homicide" style="height:400px;">
+                                                <div id = "legend-homicides"></div>
+                                              </div>
+                                            </div>
+                                            <div class="7u">
+                                              <div class="chart-crime" id="chart-homicide"></div>
+                                            </div>
+                                          
+                                          </div>
+<hr/>
+                                          <h2 id="rncv-title">VIOLENT ROBBERIES TO A BUSINESS - Total</h2>
+                                          <div class="row">
+					    <div class="4u">
+                                              <div id="map-rncv" style="height:400px">
+                                                <div id = "legend-rncv"></div>
+                                              </div>
+                                            </div>
+                                            <div class="7u">
+                                              <div class="chart-crime" id="chart-rncv"></div>
+                                            </div>
+                                          </div>
+<hr/>
+                                          <h2 id="rvcv-title">VIOLENT CAR ROBBERIES- Total</h2>
+                                          <div class="row">
+					    <div class="4u">
+                                              <div id="map-rvcv" style="height:400px">
+                                                 <div id = "legend-rvcv"></div>
+                                              </div>
+                                            </div>
+                                            <div class="7u">
+                                              <div class="chart-crime" id="chart-rvcv"></div>
+                                            </div>
+                                          </div>
+<hr/>
+                                          <h2 id="rvsv-title">NON-VIOLENT CAR ROBBERIES - Total</h2>
+                                          <div class="row">
+					    <div class="4u">
+                                              <div id="map-rvsv" style="height:400px">
+                                                 <div id = "legend-rvsv"></div>
+                                              </div>
+                                            </div>
+                                            <div class="7u">
+                                              <div class="chart-crime" id="chart-rvsv"></div>
+                                            </div>
+                                          </div>
+                                          
+						<!-- Logo -->
+							<!--<h1 id="logo"><a href="#">Strongly Typed</a></h1>
+							<p>A responsive HTML5 site template. Manufactured by HTML5 UP.</p>-->
+						
+						<!-- Nav -->
+							<nav id="nav">
+								<ul>
+									<li><a class="fa fa-home" href="index.html"><span>Rates (Sectors)</span></a></li>
+                                                                        <li><a class="fa fa-bar-chart-o" href="left-sidebar.html"><span>Counts (Cuadrants)</span></a></li>
+									<li>
+										<a href="" class="fa fa-map-marker"><span>Interactive Map</span></a>
+										<ul>
+											<li><a href="#">Lorem ipsum dolor</a></li>
+											<li><a href="#">Magna phasellus</a></li>
+											<li><a href="#">Etiam dolore nisl</a></li>
+											<li>
+												<a href="">Phasellus consequat</a>
+												<ul>
+													<li><a href="#">Magna phasellus</a></li>
+													<li><a href="#">Etiam dolore nisl</a></li>
+													<li><a href="#">Phasellus consequat</a></li>
+												</ul>
+											</li>
+											<li><a href="#">Veroeros feugiat</a></li>
+										</ul>
+									</li>
+                                                                        <li><a class="fa fa-signal" href="index.html">Charts</span></a></li>
+								</ul>
+							</nav>
+
+					</div>
+
+			</div>
+			
+	
+
+		<!-- Footer Wrapper -->
+			<div id="footer-wrapper">
+
+				<!-- Footer -->
+					<div id="footer" class="container">
+						<header>
+							<h2>Questions or comments? <strong>Get in touch:</strong></h2>
+						</header>
+						<div class="row">
+							<div class="6u">
+							
+							</div>
+							<div class="6u">
+								<section>
+									
+									<div class="row">
+										<ul class="icons 6u">
+											<li class="fa fa-github">
+												<a href="http://github.com/diegovalle">@diegovalle</a>
+											</li>
+											<li class="fa fa-envelope">
+												<a href="#">diegovalle@gmail.com</a>
+											</li>
+										</ul>
+										<ul class="icons 6u">
+											<li class="fa fa-twitter">
+												<a href="http://twitter.com/diegovalle">@diegovalle</a>
+											</li>
+											<li class="fa fa-facebook">
+												<a href="http://www.facebook.com/diegovalle">facebook.com/diegovalle</a>
+											</li>
+											<li class="fa fa-google-plus">
+												<a href="https://plus.google.com/112417668983107842349?rel=author">google.com/+DiegoValleJones</a>
+											</li>
+										</ul>
+									</div>
+								</section>
+							</div>
+						</div>
+					</div>
+
+				<!-- Copyright -->
+					<div id="copyright" class="container">
+						<ul class="links">
+							<li>&copy; Diego Valle-Jones. All rights reserved</li>
+							<li>Design: <a href="http://html5up.net/">HTML5 UP</a></li>
+						</ul>
+					</div>
+
+			</div>
+<script src="/js/maps.js"></script>
+	</body>
+</html>
