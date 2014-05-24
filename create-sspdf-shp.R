@@ -66,6 +66,7 @@ for(i in 1:length(clean_msg)) {
 
 df <- data.frame(id=unlist(dfnames), 
                  sector = unlist(sectors),
+                 #message = unlist(msgnames),
 #                  poli1=unlist(police1),
 #                  poli2=unlist(police2),
 #                  poli3=unlist(police3),
@@ -77,5 +78,8 @@ df <- data.frame(id=unlist(dfnames),
                  row.names=unlist(dfnames))
 spp <- SpatialPolygonsDataFrame(SP, data = df)
 proj4string(spp) <- CRS("+proj=longlat +datum=WGS84")
-writeOGR(spp, "cuadrante-shps", "cuadrantes-sspdf", driver = "ESRI Shapefile",
-         overwrite_layer = TRUE)
+## For some reason writeOGR sometimes fails
+#writeOGR(spp, "cuadrante-shps", "cuadrantes-sspdf", driver = "ESRI Shapefile",
+#         overwrite_layer = TRUE)
+library(maptools)
+writeSpatialShape(spp, "cuadrante-shps/cuadrantes-sspdf")       
