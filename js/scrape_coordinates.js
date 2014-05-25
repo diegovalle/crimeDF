@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // Node.js program to scrape the police cuadrantes as a JSON array
 // with the polygon coordinates, useable for creating a shapefile with
 // R

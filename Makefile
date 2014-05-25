@@ -1,7 +1,7 @@
 JSON = js/cuads.json js/msg.json js/names.json
 .PHONY: all clean
 
-all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json html/js/sectores.json
+all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json html/js/sectores.json html/interactive-maps/js/sectores.json
 
 clean:
 	rm -rf $(JSON) cuadrante-shps/cuadrantes-sspdf.shp
@@ -33,9 +33,10 @@ html/js/cuadrantes.json: cuadrante-shps/cuadrantes-sspdf-poblacion.shp
 	--properties sector,id,hom,rncv,rvcv,rvsv \
 	cuadrantes=$^
 
+html/interactive-maps/js/sectores.json: cuadrante-shps/sectores.shp
+	topojson --id-property=sector --external-properties data/interactive-sectores.csv -s 1e-10 -o $@ --properties sector,population,id,hom,rncv,rvcv,rvsv -- sectores=$^	
 ## Topojson of the police sectors (made up of many cuadrantes)
 html/js/sectores.json: cuadrante-shps/sectores.shp
-#	topojson --id-property=sector -s 1e-9 -o $@ -- sectores=$^
 	topojson \
 	--width 960 \
 	--height 800 \

@@ -15,15 +15,20 @@
 		<!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
                 <!-- Load c3.css -->
                 <link href="/css/c3.css" rel="stylesheet" type="text/css">
+                <link href="/css/crime.css" rel="stylesheet" type="text/css">
 		<script src="js/jquery.min.js"></script>
 		<script src="js/jquery.dropotron.min.js"></script>
 		<script src="js/config.js"></script>
 		<script src="js/skel.min.js"></script>
 		<script src="js/skel-panels.min.js"></script>
                 
-                <script src="http://d3js.org/d3.v3.min.js"></script>
-                <script src="http://d3js.org/topojson.v1.min.js"></script>
-                <script src="/js/c3.min.js"></script>
+                <script src="js/d3.v3.min.js"></script>
+                <script src="js/topojson.v1.min.js"></script>
+                <script src="js/c3.min.js"></script>
+                <script src="js/d3.tip.v0.6.3.js"></script>
+
+                <script src="js/tooltip.js" type="text/javascript"></script>
+                <script src="js/underscore-min.js" type="text/javascript"></script>
 
                 
 
@@ -33,85 +38,7 @@
 			<link rel="stylesheet" href="css/style-desktop.css" />
 		</noscript>
                 <style>
-#legend-homicides {
-    padding: 0 0 0 .5em;
-}
 
-li.key {
-    border-top-width: 10px;
-    border-top-style: solid;
-    font-size: .75em;
-    text-align: left;
-    width: 10%;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-ul.list-inline{
-margin-bottom: 0em;
-}
-
-.list-inline>li {
-display: inline-block;
-padding-right: 5px;
-padding-left: 0px;
-}
-
-.subdivisions {
-  fill: none;
-  stroke: #ddd;
-}
- 
-.boundary {
-  fill: none;
-  stroke: #999;
-}
- 
-.selected {
-  fill:black;
-}
-.chart-crime {
-  margin-top:60px;
-}
-.Bluesq0-9{border-top-color:rgb(247,251,255);fill:rgb(247,251,255)}
-.Bluesq1-9{border-top-color:rgb(222,235,247);fill:rgb(222,235,247)}
-.Bluesq2-9{border-top-color:rgb(198,219,239);fill:rgb(198,219,239)}
-.Bluesq3-9{border-top-color:rgb(158,202,225);fill:rgb(158,202,225)}
-.Bluesq4-9{border-top-color:rgb(107,174,214);fill:rgb(107,174,214)}
-.Bluesq5-9{border-top-color:rgb(66,146,198);fill:rgb(66,146,198)}
-.Bluesq6-9{border-top-color:rgb(33,113,181);fill:rgb(33,113,181)}
-.Bluesq7-9{border-top-color:rgb(8,81,156);fill:rgb(8,81,156)}
-.Bluesq8-9{border-top-color:rgb(8,48,107);fill:rgb(8,48,107)}
-
-.Redsq0-9{border-top-color:rgb(255,245,240);fill:rgb(255,245,240)}
-.Redsq1-9{border-top-color:rgb(254,224,210);fill:rgb(254,224,210)}
-.Redsq2-9{border-top-color:rgb(252,187,161);fill:rgb(252,187,161)}
-.Redsq3-9{border-top-color:rgb(252,146,114);fill:rgb(252,146,114)}
-.Redsq4-9{border-top-color:rgb(251,106,74);fill:rgb(251,106,74)}
-.Redsq5-9{border-top-color:rgb(239,59,44);fill:rgb(239,59,44)}
-.Redsq6-9{border-top-color:rgb(203,24,29);fill:rgb(203,24,29)}
-.Redsq7-9{border-top-color:rgb(165,15,21);fill:rgb(165,15,21)}
-.Redsq8-9{border-top-color:rgb(103,0,13);fill:rgb(103,0,13)}
-
-.Greensq0-9{border-top-color:rgb(247,252,245);fill:rgb(247,252,245)}
-.Greensq1-9{border-top-color:rgb(229,245,224);fill:rgb(229,245,224)}
-.Greensq2-9{border-top-color:rgb(199,233,192);fill:rgb(199,233,192)}
-.Greensq3-9{border-top-color:rgb(161,217,155);fill:rgb(161,217,155)}
-.Greensq4-9{border-top-color:rgb(116,196,118);fill:rgb(116,196,118)}
-.Greensq5-9{border-top-color:rgb(65,171,93);fill:rgb(65,171,93)}
-.Greensq6-9{border-top-color:rgb(35,139,69);fill:rgb(35,139,69)}
-.Greensq7-9{border-top-color:rgb(0,109,44);fill:rgb(0,109,44)}
-.Greensq8-9{border-top-color:rgb(0,68,27);fill:rgb(0,68,27)}
-
-.Purplesq0-9{border-top-color:rgb(252,251,253);fill:rgb(252,251,253)}
-.Purplesq1-9{border-top-color:rgb(239,237,245);fill:rgb(239,237,245)}
-.Purplesq2-9{border-top-color:rgb(218,218,235);fill:rgb(218,218,235)}
-.Purplesq3-9{border-top-color:rgb(188,189,220);fill:rgb(188,189,220)}
-.Purplesq4-9{border-top-color:rgb(158,154,200);fill:rgb(158,154,200)}
-.Purplesq5-9{border-top-color:rgb(128,125,186);fill:rgb(128,125,186)}
-.Purplesq6-9{border-top-color:rgb(106,81,163);fill:rgb(106,81,163)}
-.Purplesq7-9{border-top-color:rgb(84,39,143);fill:rgb(84,39,143)}
-.Purplesq8-9{border-top-color:rgb(63,0,125);fill:rgb(63,0,125)}
 </style>
 	</head>
 	<body class="homepage">
@@ -121,12 +48,13 @@ padding-left: 0px;
 						
 				<!-- Header -->
 					<div id="header" class="container">
-                                          <h2 id="homicide-title">Homicides - Total</h2>
+                                          <h2 id="homicide-title">Homicides - rates</h2>
 
 					  <div class="row">
                                            
 					    <div class="4u">
-                                              <div id="map-homicide" style="height:400px;">
+                                              <div id="map-homicide" style="height:500px;">
+                                                <small style="font-size:12px;text-align:left;">annualized rate from Jan 13 to Mar 14</small>
                                                 <div id = "legend-homicides"></div>
                                               </div>
                                             </div>
@@ -136,10 +64,11 @@ padding-left: 0px;
                                           
                                           </div>
 <hr/>
-                                          <h2 id="rncv-title">VIOLENT ROBBERIES TO A BUSINESS - Total</h2>
+                                          <h2 id="rncv-title">Violent robberies to a business - rates</h2>
                                           <div class="row">
 					    <div class="4u">
-                                              <div id="map-rncv" style="height:400px">
+                                              <div id="map-rncv" style="height:500px">
+                                                <small style="font-size:12px;text-align:left;">annualized rate from Jan 13 to Mar 14</small>
                                                 <div id = "legend-rncv"></div>
                                               </div>
                                             </div>
@@ -148,10 +77,11 @@ padding-left: 0px;
                                             </div>
                                           </div>
 <hr/>
-                                          <h2 id="rvcv-title">VIOLENT CAR ROBBERIES- Total</h2>
+                                          <h2 id="rvcv-title">Violent car robberies - rates</h2>
                                           <div class="row">
 					    <div class="4u">
-                                              <div id="map-rvcv" style="height:400px">
+                                              <div id="map-rvcv" style="height:500px">
+                                                <small style="font-size:12px;text-align:left;">annualized rate from Jan 13 to Mar 14</small>
                                                  <div id = "legend-rvcv"></div>
                                               </div>
                                             </div>
@@ -160,10 +90,11 @@ padding-left: 0px;
                                             </div>
                                           </div>
 <hr/>
-                                          <h2 id="rvsv-title">NON-VIOLENT CAR ROBBERIES - Total</h2>
+                                          <h2 id="rvsv-title">Non-violent car robberies - rates</h2> <!--  -->
                                           <div class="row">
 					    <div class="4u">
-                                              <div id="map-rvsv" style="height:400px">
+                                              <div id="map-rvsv" style="height:500px">
+                                                <small style="font-size:12px;text-align:left;">annualized rate from Jan 13 to Mar 14</small>
                                                  <div id = "legend-rvsv"></div>
                                               </div>
                                             </div>
@@ -180,7 +111,7 @@ padding-left: 0px;
 							<nav id="nav">
 								<ul>
 									<li><a class="fa fa-home" href="index.html"><span>Rates (Sectors)</span></a></li>
-                                                                        <li><a class="fa fa-bar-chart-o" href="left-sidebar.html"><span>Counts (Cuadrants)</span></a></li>
+                                                                        <li><a class="fa fa-bar-chart-o" href="counts.html"><span>Counts (Quadrants)</span></a></li>
 									<li>
 										<a href="" class="fa fa-map-marker"><span>Interactive Map</span></a>
 										<ul>
@@ -229,7 +160,7 @@ padding-left: 0px;
 												<a href="http://github.com/diegovalle">@diegovalle</a>
 											</li>
 											<li class="fa fa-envelope">
-												<a href="#">diegovalle@gmail.com</a>
+												<a href="mailto:diegovalle@gmail.com">diegovalle@gmail.com</a>
 											</li>
 										</ul>
 										<ul class="icons 6u">
@@ -258,6 +189,22 @@ padding-left: 0px;
 					</div>
 
 			</div>
+<script type="x-jst" id="tooltip-template">
+<h5>Cats</h5>
+<p> have a BA degree or higher.</p>
+</script>
+<script>
+var topoName = 'sectores';
+var mapFile = "js/sectores.json";
+var crimeFile = "js/hom-dol-sector.js";
+
+var HomicidesA = ['Homicides', 9.01, 10.93, 12.84, 10.38, 13.52, 12.43, 8.33, 10.79, 8.19, 9.56, 8.47, 8.33, 9.56, 7.38, 12.43 ];
+var rncvA = ['Violent robberies to a business', 51.9, 47.53, 48.08, 40.02, 44.94, 51.22, 48.76, 50.26, 49.72, 51.08, 56, 46.44, 44.53, 34.69, 31.96 ];
+var rvcvA = ['Violent car robberies', 60.51, 56.68, 48.62, 50.4, 60.64, 55.86, 57.64, 60.37, 56.27, 69.93, 75.53, 59.28, 68.29, 53.95, 53.4 ];
+var rvsvA = ['Non-violent car robberies', 138.77, 127.98, 123.61, 137.81, 141.64, 145.05, 134.12, 143.55, 131.8, 135.9, 144.37, 136.31, 142.87, 124.43, 118.96 ];
+crimePrefix = 'annualized rate of ';
+</script>
 <script src="/js/maps.js"></script>
+
 	</body>
 </html>

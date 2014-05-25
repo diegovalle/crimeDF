@@ -24,12 +24,13 @@ var max = d3.max(d3.entries(data), function(d) {
 });
 
 
-findRange=function(name) {
-    var range = d3.extent(d3.entries(crimeData[name]), function(d) {
-        return d3.sum(d.value);
-    });
-    return(range);
-}
+// findRange=function(name) {
+//     var range = d3.extent(d3.entries(crimeData[name]), function(d) {
+//         return d3.sum(d.value);
+//     });
+//     return(range);
+// }
+
 
 
 
@@ -50,7 +51,7 @@ var svgHomicide = d3.select("#map-homicide").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var svgRobbery = d3.select("#map-rncv").append("svg")
+var svgRNCV = d3.select("#map-rncv").append("svg")
     .attr("width", width)
     .attr("height", height);
 
@@ -62,7 +63,25 @@ var svgRVSV = d3.select("#map-rvsv").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-createMap=function(df, svg, crime, crimeCode, colorFun, titleId, chart, topoName) {
+tip = function(crimeCode) {
+    return(d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([0, 10])
+    .html(function(d) {
+        return "<span>" + d.properties.sector + (topoName === "sectores" ? "" : " - " + d.properties.id) + 
+            " || " + d.properties[crimeCode] + "</span>";
+    }));
+};
+tipHom = tip('hom');
+svgHomicide.call(tipHom);
+tipRNCV = tip('rncv');
+svgRNCV.call(tipRNCV);
+tipRVCV = tip('rvcv')
+svgRVCV.call(tipRVCV);
+tipRVSV = tip('rvsv');
+svgRVSV.call(tipRVSV);
+
+createMap=function(df, svg, crime, crimeCode, colorFun, titleId, chart, topoNam, tipFun) {
     type = topoName === "cuadrantes" ? "id" : "sector";
     svg.append("g")
         .attr("class", "subdivisions")
@@ -74,37 +93,15 @@ createMap=function(df, svg, crime, crimeCode, colorFun, titleId, chart, topoName
         })
         .attr("d", path)
         .attr("title", function(d) { return +d.properties.sector; })
-        .on("mouseover", function(d) {
-            var xPosition = d3.mouse(this)[0] ;//- 30;
-            var yPosition = d3.mouse(this)[1] - 20;
-            
-            svg.append("text")
-                .attr("id", "tooltip")
-                .attr("x", xPosition)
-                .attr("y", yPosition)
-                .attr("text-anchor", "middle")
-                .style("font-size", ".7em")
-                .text(d.properties.sector + (topoName === "sectores" ? "" : " - " + d.properties.id));
-            
-            d3.select(this)
-                .attr("class", "selected");
-            
-        })
+        .on("mouseover", tipFun.show)
+        .on("mouseout", tipFun.hide)
         .on("mousedown", function(d) {
             data = crimeData[crimeCode][d.properties[type]].slice(0);
             data.unshift(crime);
             chart.load({
                 columns: [data],
             });
-            d3.select(titleId).text(crime + " / " + d.properties.sector + " / " + d.properties.id);
-        })
-        .on("mouseout", function(d) {
-            d3.select("#tooltip").remove();
-            
-            d3.select(this)
-                .transition()
-                .attr("class", function(d) { return colorFun(d.properties[crimeCode]); })
-                .duration(250)
+            d3.select(titleId).text(crime + " / " + d.properties.sector + (topoName === "sectores" ? "" : " / " + d.properties.id));
         });
 }
 
@@ -113,23 +110,7 @@ d3.select(self.frameElement).style("height", height + "px");
 
 
 
-chartHomicides = createLineChart('#chart-homicide',
-                         ['Homicides', 66, 80, 94, 76, 99, 91, 61, 79, 
-                          60, 70, 62, 61, 70, 54, 91 ],
-                        'number of homicides',
-                                 'rgb(203,24,29)')
 
-chartrncv = createLineChart('#chart-rncv',
-                            ['Violent robberies to a business', 380, 348, 352, 293, 329, 375, 357, 368, 364, 374, 410, 340, 326, 254, 234 ],
-                            'number of violent robberies to a business','rgb(8,48,107)' )
-
-chartrvcv = createLineChart('#chart-rvcv',
-                            ['Violent car robberies', 443, 415, 356, 369, 444, 409, 422, 442, 412, 512, 553, 434, 500, 395, 391 ],
-                            'number of violent car robberies','rgb(63,0,125)')
-
-chartrvsv = createLineChart('#chart-rvsv',
-                            ['Non-violent car robberies', 1016, 937, 905, 1009, 1037, 1062, 982, 1051, 965, 995, 1057, 998, 1046, 911, 871 ],
-                            'number of non-violent car robberies','rgb(0,68,27)')
 
 function createLineChart(selection, totalCrime, labelText, color) {
     var chart1 = c3.generate({
@@ -176,8 +157,6 @@ createLegend=function(selection, colorFun){
     var keys = legend.selectAll('li.key')
         .data(colorFun.range());
 
-    digit = d3.format("04d")
-
     keys.enter().append('li')
         .attr('class', function(d) {return('key ' + String(d))})
         .text(function(d) {
@@ -186,25 +165,24 @@ createLegend=function(selection, colorFun){
         });
 }
 
-var topoName = 'sectores';
-var mapFile = "js/sectores.json";
-var crimeFile = "js/hom-dol-sector.js";
-
-var topoName = 'cuadrantes';
-var mapFile = "js/cuadrantes.json";
-var crimeFile = "js/hom-dol-cuad.js";
-
+// var topoName = 'cuadrantes';    
+// var mapFile = "js/cuadrantes.json";
+// var crimeFile = "js/hom-dol-cuad.js";
 d3.json(mapFile, function(error, df) {      
     d3.json(crimeFile, function(data) {
+        findRange=function(name) {
+            return(d3.extent(d3.entries(df.objects[topoName].geometries), function(d){return(+d.value.properties[name])} ));
+        }
+
         crimeData=data
         quantizeRed = createQuantized(findRange('hom'), "Redsq")
         quantizeBlue = createQuantized(findRange('rncv'), "Bluesq")
         quantizePurple = createQuantized(findRange('rvcv'), "Purplesq")
         quantizeGreen = createQuantized(findRange('rvsv'), "Greensq")
-        createMap(df, svgHomicide, 'Homicides','hom', quantizeRed, '#homicide-title', chartHomicides, topoName);
-        createMap(df, svgRobbery, 'Violent robberies to a business', 'rncv', quantizeBlue, '#rncv-title', chartrncv, topoName);
-        createMap(df, svgRVCV, 'Violent car robberies', 'rvcv', quantizePurple, '#rvcv-title', chartrvcv, topoName);
-        createMap(df, svgRVSV, 'Non-violent car robberies', 'rvsv', quantizeGreen, '#rvsv-title', chartrvsv, topoName);
+        createMap(df, svgHomicide, 'Homicides','hom', quantizeRed, '#homicide-title', chartHomicides, topoName, tipHom);
+        createMap(df, svgRNCV, 'Violent robberies to a business', 'rncv', quantizeBlue, '#rncv-title', chartrncv, topoName, tipRNCV);
+        createMap(df, svgRVCV, 'Violent car robberies', 'rvcv', quantizePurple, '#rvcv-title', chartrvcv, topoName, tipRVCV);
+        createMap(df, svgRVSV, 'Non-violent car robberies', 'rvsv', quantizeGreen, '#rvsv-title', chartrvsv, topoName, tipRVSV);
         createLegend('#legend-homicides', quantizeRed)
         createLegend('#legend-rncv', quantizeBlue)
         createLegend('#legend-rvcv', quantizePurple)
@@ -212,3 +190,21 @@ d3.json(mapFile, function(error, df) {
     });
 });
 
+
+
+chartHomicides = createLineChart('#chart-homicide',
+                                 HomicidesA,
+                                 crimePrefix + 'homicides',
+                                 'rgb(203,24,29)')
+
+chartrncv = createLineChart('#chart-rncv',
+                            rncvA,
+                            crimePrefix + 'violent robberies to a business','rgb(8,48,107)' )
+
+chartrvcv = createLineChart('#chart-rvcv',
+                            rvcvA,
+                            crimePrefix + 'violent car robberies','rgb(63,0,125)')
+
+chartrvsv = createLineChart('#chart-rvsv',
+                            rvsvA,
+                            crimePrefix + 'non-violent car robberies','rgb(0,68,27)')
