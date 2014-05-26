@@ -81,29 +81,33 @@ date.sectores <- ddply(mcrime, .(sector, crime, date), summarise,
                        count = sum(count), 
                        population = sum(population, na.rm = TRUE),
                        rate = (count / population) * 10^5 * 12)
-date.sectores <- subset(na.omit(date.sectores), crime == "Homicidio doloso")
-date.sectores$sector <- with(date.sectores, reorder(sector, -rate, mean))
-
-ggplot(date.sectores, 
-       aes(as.Date(date), rate, group = sector)) +
-  geom_line() +
-  facet_wrap(~sector) +
-  #geom_smooth(method="loess", se = FALSE)  +
-  scale_y_continuous(limits = c(0, 140), breaks = c(0, 100)) +
-  theme(strip.text.x = element_text(size = 6))
-ggsave(file.path("graphs", "total-sector-ts.png"), dpi = 100, width = 10, height = 7)
 
 
+plotSectorRates <- function(df, crime, sub) {
+  df <- subset(na.omit(df), crime == sub)
+  df$sector <- with(df, reorder(sector, -rate, mean))
+  ggplot(df, 
+         aes(as.Date(date), rate, group = sector)) +
+    geom_line() +
+    facet_wrap(~sector) +
+    #geom_smooth(method="loess", se = FALSE)  +
+    #scale_y_continuous(limits = c(0, 140), breaks = c(0, 100)) +
+    theme(strip.text.x = element_text(size = 6)) +
+    ggtitle(str_c(crime, " rates in the DF")) +
+    xlab("date") +
+    ylab("rate") +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+}
 
+plotSectorRates(date.sectores, "Homicide", "Homicidio doloso")
+ggsave(file.path("graphs", "total-sector-hom.png"), dpi = 100, width = 10, height = 7)
 
+plotSectorRates(date.sectores, "Robbery to a business with violence", "Robo a negocio C/V")
+ggsave(file.path("graphs", "total-sector-rncv.png"), dpi = 100, width = 10, height = 7)
 
+plotSectorRates(date.sectores, "Car robbery with violence", "Robo de vehiculo automotor C/V")
+ggsave(file.path("graphs", "total-sector-rvcv.png"), dpi = 100, width = 10, height = 7)
 
-library(rMaps)
-map <- Leaflet$new()
-map$setView(c(24, -99), zoom = 13)
-map$tileLayer(provider = 'Stamen.Watercolor')
-map$marker(
-  c(51.5, -0.09),
-  bindPopup = 'Hi. I am a popup'
-)
-map
+plotSectorRates(date.sectores, "Car robbery without violence", "Robo de vehiculo automotor S/V")
+ggsave(file.path("graphs", "total-sector-rvsv.png"), dpi = 100, width = 10, height = 7)
+

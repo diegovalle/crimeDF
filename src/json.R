@@ -50,6 +50,22 @@ topo <- subset(topo, id != "(en blanco)")
 apply(topo[,-1], 2, function(x) range(x))
 write.csv(topo, "data/topo-cuadrantes.csv", row.names = FALSE)
 
+#for merging with the leaflet topojson
+topo <- ddply(mcrime, .(crime, cuadrante), summarise,
+              count = sum(count),
+              population = population[1],
+              rate = round((sum(count, na.rm = TRUE) / 
+                       sum(population, na.rm = TRUE)) * 10 ^ 5*(12/15), 1))
+topo.count <- cast(topo, cuadrante + population ~ crime, value = "count")
+topo.rate <- cast(topo, cuadrante + population ~ crime, value = "rate")
+names(topo.count) <- c("id", "population", "hom_count", "rncv_count", "rvcv_count", "rvsv_count")
+names(topo.rate) <- c("id", "population", "hom_rate", "rncv_rate", "rvcv_rate", "rvsv_rate")
+topo <- merge(topo.rate, topo.count)
+topo <- subset(topo, id != "(en blanco)")
+apply(topo[,-1], 2, function(x) range(x))
+write.csv(topo, "data/interactive-cuadrantes.csv", row.names = FALSE)
+
+
 
 js <- list(hom=formatCuadranteForJSON(mcrime, "Homicidio doloso"),
            rncv=formatCuadranteForJSON(mcrime, "Robo a negocio C/V"),
@@ -67,6 +83,9 @@ date.total <- ddply(mcrime, .(crime, date), summarise,
 date.total$date <- as.Date(date.total$date)
 total <- cast(date.total, date ~ crime, value = "rate")
 toJSON(total[,-1], dataframe = "column")
+
+##########33
+#Sector data
 
 
 js <- list(hom=formatSectorForJSON(mcrime, "Homicidio doloso"),
@@ -104,8 +123,13 @@ write.csv(topo, "data/topo-sectores.csv", row.names = FALSE)
 
 interactive.map <- crime.sector[,c("sector", "crime", "count", "population", "total")]
 interactive.map$count <- round(interactive.map$count, 1)
-interactive.map <- cast(interactive.map, sector + population ~ crime, value = "count")
-names(interactive.map) <- c("sector", "population", "hom", "rncv", "rvcv", "rvsv")
+interactive.map.rate <- cast(interactive.map, sector + population ~ crime, value = "count")
+interactive.map.total <- cast(interactive.map, sector + population ~ crime, value = "total")
+names(interactive.map.rate) <- c("sector", "population", "hom_rate", "rncv_rate", 
+                            "rvcv_rate", "rvsv_rate")
+names(interactive.map.total) <- c("sector", "population", "hom_count", "rncv_count", 
+                                 "rvcv_count", "rvsv_count")
+interactive.map <- merge(interactive.map.total, interactive.map.rate)
 interactive.map <- na.omit(interactive.map)
 apply(interactive.map[,-1], 2, function(x) range(x))
 write.csv(interactive.map, "data/interactive-sectores.csv", row.names = FALSE)
