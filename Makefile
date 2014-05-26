@@ -78,7 +78,7 @@ html/js/sectores.json: cuadrante-shps/sectores.shp
 
 $(R): input.in.intermediate2
 .INTERMEDIATE: input.in.intermediate2
-input.in.intermediate: run-all.R
+input.in.intermediate2: run-all.R
 	Rscript --no-save --no-restore --verbose $^
 
 node_modules/.bin/hulk:
@@ -86,5 +86,5 @@ node_modules/.bin/hulk:
 
 $(HTML): input.in.intermediate3
 .INTERMEDIATE: input.in.intermediate3
-input.in.intermediate: node_modules/.bin/hulk interactive-maps/index.js
+input.in.intermediate3: node_modules/.bin/hulk interactive-maps/index.js
 	node interactive-maps/index.js
