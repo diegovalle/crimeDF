@@ -1,13 +1,23 @@
-JSON = js/cuads.json js/msg.json js/names.json
+JSON = js/cuads.json js/msg.json js/names.json 
+R = graphs/total-sector-hom.png graphs/total-sector-rncv.png \
+    graphs/total-sector-rvcv.png data/interactive-cuadrantes.csv \
+    data/interactive-sectores.csv data/topo-cuadrantes.csv \
+    data/topo-sectores.csv html/js/hom-dol-sector.js \
+    html/js/hom-dol-cuad.js clean-data/df-crime.csv
+HTML = html/rncv-cuadrantes.html html/rncv-sectores.html \
+       html/rvcv-cuadrantes.html html/rvcv-sectores.html \
+       html/rvsv-cuadrantes.html html/rvsv-sectores.html
 .PHONY: all clean
 
-all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json html/js/sectores.json html/js/sectores-map.json html/js/cuadrantes-map.json
+all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json \
+     html/js/sectores.json html/js/sectores-map.json \
+     html/js/cuadrantes-map.json $(R) \
+     node_modules/.bin/hulk $(HTML)
 
 clean:
 	rm -rf $(JSON) cuadrante-shps/cuadrantes-sspdf.shp
 
-hogan.js:
-	npm install hogan.js
+
 
 ## Download the polygon coordinates from the police website
 $(JSON): input.in.intermediate
@@ -66,6 +76,15 @@ html/js/sectores.json: cuadrante-shps/sectores.shp
 	--properties sector,id,hom,rncv,rvcv,rvsv \
 	sectores=$^
 
-
-clean-data/df-crime.csv: run-all.R
+$(R): input.in.intermediate2
+.INTERMEDIATE: input.in.intermediate2
+input.in.intermediate: run-all.R
 	Rscript --no-save --no-restore --verbose $^
+
+node_modules/.bin/hulk:
+	npm install hogan.js
+
+$(HTML): input.in.intermediate3
+.INTERMEDIATE: input.in.intermediate3
+input.in.intermediate: node_modules/.bin/hulk interactive-maps/index.js
+	node interactive-maps/index.js

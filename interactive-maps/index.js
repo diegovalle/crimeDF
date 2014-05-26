@@ -6,7 +6,7 @@ var hogan = require('hogan.js')
   , prod  = process.argv[2] == 'production';
 
 //read the html template
-var page = fs.readFileSync('./leaflet.mustache', 'utf-8');
+var page = fs.readFileSync('interactive-maps/leaflet.mustache', 'utf-8');
 
 // var context = {scaleFun: "scaleHawt",
 // 	   varname: "hawt"};
@@ -19,7 +19,7 @@ var page = fs.readFileSync('./leaflet.mustache', 'utf-8');
 var compileTemplate = function(page, context, fileName) {
     var template = hogan.compile(page, { sectionTags: [{o:'_i', c:'i'}] });
     var output = template.render(context);
-    fs.writeFileSync("../html/" + fileName + ".html", output, 'utf-8');
+    fs.writeFileSync("html/" + fileName + ".html", output, 'utf-8');
 };
 
 var createTemplate = function(scaleName, property, title, level, page, fileName) {
