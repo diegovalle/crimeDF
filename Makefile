@@ -13,7 +13,7 @@ all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json \
      node_modules/.bin/hulk $(HTML)
 
 clean:
-	rm -rf $(JSON) cuadrante-shps/cuadrantes-sspdf.shp
+	rm -rf $(JSON) cuadrante-shps/cuadrantes-sspdf.shp $(R) $(HTML)
 
 
 
