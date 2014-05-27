@@ -192,6 +192,8 @@ info.onAdd = function (map) {
     };
 
 info.update = function (props) {
+    // don't leak
+    $("#seltarget").remove();
     this._div.innerHTML = '<div id="variables" class="menu-ui"><select id="seltarget"><option value="Homicide">Homicide</option><option value="Violent robberies to a business">Violent robberies to a business</option><option value="Violent car robberies">Violent car robberies</option><option value="Non-violent car robberies">Non-violent car robberies</option></select></div><h1>'+title+'</h1>' + '<h3>' + 
         (props ? props.sector + ('{{level}}' === "sectores" ? "" : " / " + props.id) : 'DF (annualized rates Jan 13 - Mar 14)') +'</h3>' + '<div><h4>Total Population</h4>' +  (props ? '' + comma(props.population) : '8,785,874') +
         '</div><div class="hom"><h4>Homicides (<b>rate</b> / count)</h4><b>' +  (props ? '' + props.hom_rate : '10.1') + '</b> / '  +  (props ? comma(props.hom_count) : '1,114') +
