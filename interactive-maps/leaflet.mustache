@@ -137,14 +137,33 @@ var title = "{{titleName}}";
 //use the appropiate scale from the template
 var getColor;
 
+var nokiaStreets = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.night/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+    attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+    subdomains: '1234',
+    mapID: 'newest',
+    app_id: '6nA3IVXYrizzTDgFJMIN',
+    app_code: '6o4Vvdk1QIkytF-bmyH_Yg',
+    base: 'base',
+    minZoom: 0,
+    maxZoom: 20
+});
+var nokiaSat = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/satellite.day/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+    attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+    subdomains: '1234',
+    mapID: 'newest',
+    app_id: '6nA3IVXYrizzTDgFJMIN',
+    app_code: '6o4Vvdk1QIkytF-bmyH_Yg',
+    base: 'aerial',
+    minZoom: 0,
+    maxZoom: 20
+});
 
-
-var nokiaStreets = L.tileLayer('http://{s}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.night/{z}/{x}/{y}/256/png8', {
-    attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
-}),
-nokiaSat = L.tileLayer('http://{s}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8', {
-    attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
-})
+// var nokiaStreets = L.tileLayer('http://{s}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.night/{z}/{x}/{y}/256/png8', {
+//     attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+// }),
+// nokiaSat = L.tileLayer('http://{s}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8', {
+//     attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+// })
 var map = L.map('map', {center: new L.LatLng(19.38, -99.1),
                         zoom: 11,
                         layers: [nokiaStreets]});
