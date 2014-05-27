@@ -35,11 +35,18 @@ crime.sector <- ddply(crime.cuadrante,
 crime.sector <- crime.sector[order(-crime.sector$rate),]
 
 names(crime.cuadrante) <- c("crime", "id", "total", "population", "sector", "rate")
-## Homicidio doloso == 749
-## Robo a negocio C/V == 4,239
-## Robo de vehiculo automotor C/V == 5223
-## Robo de vehiculo automotor S/V == 12,056
-#ddply(crime14, .(name, year), summarise, sum(total))
+## Homicidio doloso == 749 vs SSPDF == 899
+## Robo a negocio C/V == 4,239 vs SSP == 4290
+## Robo de vehiculo automotor C/V == 5223 vs SSPDF == 5211
+## Robo de vehiculo automotor S/V == 12,056 vs SSPDF == 12014
+ddply(mcrime, .(crime, year(date)), summarise, sum(count))
+totals.cuad <- ddply(mcrime, .(crime, cuadrante), summarise, 
+      count = sum(count),
+      population = population[1])
+ddply(totals.cuad, .(crime), summarise,
+      count = sum(count),
+      population = sum(population, na.rm = TRUE),
+      rate = (sum(count, na.rm = TRUE)/ sum(population, na.rm = TRUE)) * 10 ^ 5*(12/15))
 
 cuadrantes.map <- plyr::join(fcuadrantes, subset(crime.cuadrante, 
                                                  crime == "Robo de vehiculo automotor C/V"))
