@@ -16,4 +16,6 @@ To recreate the whole analysis just run:
 make
 ```
 
+The shapefile scraped from the cuadrante polygon coordinates actually had some geometry errors (introduced at the source, not from the scrapping), so I cleaned them up in QGIS and saved them as _cuadrantes-sspdf-no-errors.shp_, then I added population data from the 2010 census and saved the file as _cuadrantes-sspdf-poblacion.shp_. There's also a file called _sectores.shp_ with all cuadrantes merged at the sector level.
+
 If you only care about the cuadrante crime data it is available from the __data/crime-df.csv__ file.
