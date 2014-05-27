@@ -6,12 +6,12 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="css/l.geosearch.css" />
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
     <!--[if lte IE 8]>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.ie.css" />
     <![endif]-->
 
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="js/topojson.v1.min.js"></script>
     <script type="text/javascript" src="js/chroma.min.js"></script>
@@ -20,6 +20,9 @@
     <script src="js/d3.v3.min.js"></script>
 
     <style>
+    select {
+        font-size: 24px;
+    }
       html, body {
       height: 100%;
       }
@@ -63,7 +66,7 @@ height: 100%;
       }
       .info h4 {
           margin: 0 0 0px;
-          color: #777;
+          color: #333;
       }
 
       .info div{margin:0 0 5px;}
@@ -77,9 +80,9 @@ height: 100%;
       body.rvcv_count .info div.rvcv,
       body.rvsv_rate .info div.rvsv,
       body.rvsv_count .info div.rvsv {
-          background:#F6E493;
-          color:#000;
-          border-radius: 3px;
+          //background:#F6E493;
+          //color:#000;
+          //border-radius: 3px;
       }
 .legend {
     line-height: 18px;
@@ -108,175 +111,243 @@ height: 100%;
     <!-- </ul> -->
     <script type="text/javascript">
       //The map
-      var mxc;
+    var mxc;
 
-      //return a color scale for the choropleths
-      var createScale = function(colors, domain, numcol){
-          return chroma.scale(colors).domain(domain, numcol);
-      };
+//return a color scale for the choropleths
+var createScale = function(colors, domain, numcol){
+    return chroma.scale(colors).domain(domain, numcol);
+};
 
-      
+//for formatting the population data
+comma = d3.format("0,000");
 
-       var scaleHomicide,
-          scaleRNCV,
-          scaleRVCV,
-          scaleRVSV;
-      
+var scaleHomicide,
+scaleRNCV,
+scaleRVCV,
+scaleRVSV;
+var colorFun;
+var currentName = "hom" + '{{type}}';
+var lastSelect = "Homicides";
 
-      //remember this is a mustache template
-      var scaleFun;
-      var varName = "{{varName}}";
-      var title = "{{titleName}}";
+//remember this is a mustache template
+var scaleFun;
+var varName = "{{varName}}";
+var title = "{{titleName}}";
 
-      //use the appropiate scale from the template
-      var getColor;
+//use the appropiate scale from the template
+var getColor;
 
 
 
-      var nokiaStreets = L.tileLayer('http://{s}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.night/{z}/{x}/{y}/256/png8', {
-          attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
-      }),
-          nokiaSat = L.tileLayer('http://{s}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8', {
-              attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
-          })
-      var map = L.map('map', {center: new L.LatLng(19.38, -99.1),
-                              zoom: 11,
-                              layers: [nokiaStreets]});
+var nokiaStreets = L.tileLayer('http://{s}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.night/{z}/{x}/{y}/256/png8', {
+    attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+}),
+nokiaSat = L.tileLayer('http://{s}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8', {
+    attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+})
+var map = L.map('map', {center: new L.LatLng(19.38, -99.1),
+                        zoom: 11,
+                        layers: [nokiaStreets]});
 
-      var baseMaps = {
-          "Satellite": nokiaSat,
-          "Streets": nokiaStreets
-      };
-      
-      
+var baseMaps = {
+    "Satellite": nokiaSat,
+    "Streets": nokiaStreets
+};
 
-      L.control.layers(baseMaps).addTo(map);
 
-    //add a geosearch control
-   // new L.Control.GeoSearch({
-    //  provider: new L.GeoSearch.Provider.Google()
-   // }).addTo(map);
 
-    // control that shows state info on hover
-    var info = L.control();
+L.control.layers(baseMaps).addTo(map);
 
-    info.onAdd = function (map) {
-      this._div = L.DomUtil.create('div', 'info');
-      this.update();
-      return this._div;
+//add a geosearch control
+// new L.Control.GeoSearch({
+//  provider: new L.GeoSearch.Provider.Google()
+// }).addTo(map);
+
+// control that shows state info on hover
+var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update();
+    return this._div;
     };
 
-      info.update = function (props) {
-    this._div.innerHTML = '<h1>'+title+'</h1>' + '<h3>' + (props ? props.sector + ('{{level}}' === "sectores" ? "" : " / " + props.id) : '&nbsp;') +'</h3>' + '<div><h4>Total Population</h4>' +  (props ? '' + props.population : 'Hover over a Polygon') +
-        '</div><div class="hom"><h4><a href="homicide-{{level}}.html">Homicides (<i>rate</i> / count)</a></h4><i>' +  (props ? '' + props.hom_rate : '&nbsp;') + '</i> / '  +  (props ? props.hom_count : '&nbsp;') +
-        '</div><div class="rncv"><h4><a href="rncv-{{level}}.html">Violent robberies to a business  (<i>rate</i> / count)</a> </h4><i>' +  (props ? '' + props.rncv_rate : '&nbsp;') + '</i> / '  +  (props ? props.rncv_count : '&nbsp;') +
-        '</div><div class="rvcv"><h4><a href="rvcv-{{level}}.html">Violent car robberies (<i>rate</i> / count)</a> </h4><i>' +  (props ? '' + props.rvcv_rate  : '&nbsp;') + '</i> / '  +  (props ? props.rvcv_count : '&nbsp;') +
-        '</div><div class="rvsv"><h4><a href="rvsv-{{level}}.html">Non-violent car robberies (<i>rate</i> / count)</a> </h4><i>' +  (props ? props.rvsv_rate  : '&nbsp;') + '</i> / '  +  (props ? props.rvsv_count : '&nbsp;') +'</div>'
+info.update = function (props) {
+    this._div.innerHTML = '<div id="variables" class="menu-ui"><select id="seltarget"><option value="Homicide">Homicide</option><option value="Violent robberies to a business">Violent robberies to a business</option><option value="Violent car robberies">Violent car robberies</option><option value="Non-violent car robberies">Non-violent car robberies</option></select></div><h1>'+title+'</h1>' + '<h3>' + 
+        (props ? props.sector + ('{{level}}' === "sectores" ? "" : " / " + props.id) : '&nbsp;') +'</h3>' + '<div><h4>Total Population</h4>' +  (props ? '' + comma(props.population) : 'Hover over a Polygon') +
+        '</div><div class="hom"><h4>Homicides (<b>rate</b> / count)</h4><b>' +  (props ? '' + props.hom_rate : '&nbsp;') + '</b> / '  +  (props ? comma(props.hom_count) : '&nbsp;') +
+        '</div><div class="rncv"><h4>Violent robberies to a business  (<b>rate</b> / count) </h4><b>' +  (props ? '' + props.rncv_rate : '&nbsp;') + '</b> / '  +  (props ? comma(props.rncv_count) : '&nbsp;') +
+        '</div><div class="rvcv"><h4>Violent car robberies (<b>rate</b> / count) </h4><b>' +  (props ? '' + props.rvcv_rate  : '&nbsp;') + '</b> / '  +  (props ? comma(props.rvcv_count) : '&nbsp;') +
+        '</div><div class="rvsv"><h4>Non-violent car robberies (<b>rate</b> / count) </h4><b>' +  (props ? props.rvsv_rate  : '&nbsp;') + '</b> / '  +  (props ? comma(props.rvsv_count) : '&nbsp;') +'</div>'
+    $("#seltarget").val(lastSelect);
+    $("#seltarget").change(function() {
+        switch($(this).attr('value')) {
+        case "Homicide":
+            colorFun =  scaleHomicide;
+            currentName ="hom" + '{{type}}';
+            lastSelect = "Homicide";
+            break;
+        case "Violent robberies to a business":
+            colorFun =  scaleRNCV;
+            currentName = "rncv" + '{{type}}';
+            lastSelect = "Violent robberies to a business";
+            break;
+        case "Violent car robberies":
+            colorFun =  scaleRVCV;
+            currentName = "rvcv" + '{{type}}';
+            lastSelect = "Violent car robberies";
+            break;
+        case "Non-violent car robberies":
+            colorFun =  scaleRVSV;
+            currentName = "rvsv" + '{{type}}';
+            lastSelect = "Non-violent car robberies";
+            break;
+            
+        }
+        mxc.eachLayer(function(layer) {
+            layer.setStyle({
+                fillColor: colorFun(layer.feature.properties[currentName]),
+                fillOpacity: 0.8,
+                weight: 0.5
+            });    
+        });
+    });
+};
+
+info.addTo(map);
+
+
+var getStyle = function(feature) {
+    return {
+        fillColor: colorFun(feature.properties[currentName]),
+        weight: .5,
+        opacity: 1,
+        color: '#555',
+        fillOpacity: 0.8
     };
+    
+};
 
-    info.addTo(map);
-
-
-    var getStyle = function(feature) {
-      return {
-        fillColor: getColor(feature.properties[varName]),
-              weight: .1,
-              opacity: 1,
-              color: '#ddd',
-              fillOpacity: 0.8
-      };
-
-    };
-
-    function highlightFeature(e) {
-      var layer = e.target;
-
-      layer.setStyle({
+function highlightFeature(e) {
+    var layer = e.target;
+    
+    layer.setStyle({
         fillColor: 'transparent',
         weight: .6,
-        color: 'black'
-
-      });
-
+        color: '#555'
+        
+    });
+    
     if (!L.Browser.ie && !L.Browser.opera) {
-        layer.bringToFront();
-      }
-
-      info.update(layer.feature.properties);
+       layer.bringToFront();
     }
+    
+    info.update(layer.feature.properties);
+}
 
-    function resetHighlight(e) {
-      mxc.resetStyle(e.target);
-      info.update();
-    }
+function resetHighlight(e) {
+    //mxc.resetStyle(e.target);
+    e.target.setStyle({
+	fillColor: colorFun(e.target.feature.properties[currentName]),
+        fillOpacity: 0.8,
+        weight: 0.5,
+        color: '#555'
+    });
+    info.update();
+}
 
-    function onEachFeature(feature, layer) {
-      layer.on({
+function onEachFeature(feature, layer) {
+    layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight
-      });
-    }
+    });
+    
+}
 
-    $.getJSON('js/{{level}}-map.json', function (data) {
-              var mxcGeojson = topojson.feature(data, data.objects.{{level}}).features;
-
-      var featureCollection = {
+$.getJSON('js/{{level}}-map.json', function (data) {
+    var mxcGeojson = topojson.feature(data, data.objects.{{level}}).features;
+    
+    var featureCollection = {
         "type": "FeatureCollection",
         "features": []
-      };
-
-      for (var i = 0; i <  mxcGeojson.length; i++) {
+    };
+    
+    for (var i = 0; i <  mxcGeojson.length; i++) {
         featureCollection.features.push({
-          "type":"Feature",
-          "geometry":  mxcGeojson[i].geometry,
-          "properties":  mxcGeojson[i].properties
+            "type":"Feature",
+            "geometry":  mxcGeojson[i].geometry,
+            "properties":  mxcGeojson[i].properties
         });
-      }
-
-      findRange=function(mxcGeojson, name) {
-            return(d3.extent(d3.entries(mxcGeojson), function(d){return(+d.value.properties[name])} ));
-        }
-      //The scales for the various maps
-      scaleHomicide = createScale(chroma.brewer.Reds,
-                                 findRange(mxcGeojson, '{{varName}}'), 9),
-          scaleRNCV = createScale(chroma.brewer.Blues, findRange(mxcGeojson, '{{varName}}'), 9),
-          scaleRVCV = createScale(chroma.brewer.Purples, findRange(mxcGeojson, '{{varName}}'), 9),
-          scaleRVSV = createScale(chroma.brewer.Greens, findRange(mxcGeojson, '{{varName}}'), 9);
-      getColor = function(value) {
-          return scaleFun(value);
-      };
-      scaleFun = {{scaleFun}};
-
-      // mxcLayer.addData(featureCollection);
-
-      mxc = L.geoJson(featureCollection, {
+    }
+    
+    findRange=function(mxcGeojson, name) {
+        return(d3.extent(d3.entries(mxcGeojson), function(d){return(+d.value.properties[name])} ));
+    }
+    //The scales for the various maps
+    scaleHomicide = createScale(chroma.brewer.Reds,
+                                findRange(mxcGeojson, 'hom' + '{{type}}'), 9),
+    scaleRNCV = createScale(chroma.brewer.Blues, 
+                            findRange(mxcGeojson, 'rncv' + '{{type}}'), 9),
+    scaleRVCV = createScale(chroma.brewer.Purples, 
+                            findRange(mxcGeojson, 'rvcv' + '{{type}}'), 9),
+    scaleRVSV = createScale(chroma.brewer.Greens, 
+                            findRange(mxcGeojson, 'rvsv' + '{{type}}'), 9);
+    getColor = function(value) {
+        return scaleFun(value);
+    };
+    scaleFun = {{scaleFun}};
+    colorFun = scaleFun;
+    
+    // mxcLayer.addData(featureCollection);
+    
+    mxc = L.geoJson(featureCollection, {
         style: getStyle,
         onEachFeature: onEachFeature
-      }).addTo(map);
-    });
-                         //  var legend = L.control({position: 'bottomright'});
+    }).addTo(map);
+    info.update();
+});
+//  var legend = L.control({position: 'bottomright'});
 
-   //legend.onAdd = function (map) {
+//legend.onAdd = function (map) {
 
-   // var div = L.DomUtil.create('div', 'info legend'),
-  //      grades = [0, 10, 20, 50, 100, 200, 500, 1000],
-  //      labels = [];
- //   var r = colorFun.invertExtent(d);
- //           return d3.round(r[0], 0)
-    // loop through our density intervals and generate a label with a colored square for each interval
- //   for (var i = 0; i < grades.length; i++) {
- //       div.innerHTML +=
- //           '<i style="background:' + (chroma.brewer.Reds[i]) + '"></i> ' +
- //           grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+// var div = L.DomUtil.create('div', 'info legend'),
+//      grades = [0, 10, 20, 50, 100, 200, 500, 1000],
+//      labels = [];
+//   var r = colorFun.invertExtent(d);
+//           return d3.round(r[0], 0)
+// loop through our density intervals and generate a label with a colored square for each interval
+//   for (var i = 0; i < grades.length; i++) {
+//       div.innerHTML +=
+//           '<i style="background:' + (chroma.brewer.Reds[i]) + '"></i> ' +
+//           grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
  //   }
 
 //     return div; 
 //};
 
-legend.addTo(map);
+//legend.addTo(map);
 
-    </script>
 
+// var $select = $('<select></select>')
+//     .appendTo($('#variables'))
+//     .on('change', function() {
+//         setVariable($(this).val());
+//     });
+// var variables = [
+//     'B06011002 - Born in state of residence',
+//     'B06011003 - Born in other state of the United States',
+//     'B06011004 - Native; born outside the United States'];
+// for (var i = 0; i < variables.length; i++) {
+//     //ranges[variables[i]] = { min: Infinity, max: -Infinity };
+//     // Simultaneously, build the UI for selecting different
+//     // ranges
+//     $('<option></option>')
+//         .text(variables[i])
+//         .attr('value', variables[i])
+//         .appendTo($select);
+// }
+</script>
+    
     <script id="deferedjs" type="text/javascript">
     var _gaq=[['_setAccount','UA-100264-1'],['_trackPageview']]; // Change UA-XXXXX-X to be your site's ID
     (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;

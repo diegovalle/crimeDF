@@ -4,9 +4,7 @@ R = graphs/total-sector-hom.png graphs/total-sector-rncv.png \
     data/interactive-sectores.csv data/topo-cuadrantes.csv \
     data/topo-sectores.csv html/js/hom-dol-sector.js \
     html/js/hom-dol-cuad.js clean-data/df-crime.csv
-HTML = html/rncv-cuadrantes.html html/rncv-sectores.html \
-       html/rvcv-cuadrantes.html html/rvcv-sectores.html \
-       html/rvsv-cuadrantes.html html/rvsv-sectores.html
+HTML = html/cuadrantes.html html/sectores.html
 .PHONY: all clean
 
 all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json \
@@ -86,5 +84,5 @@ node_modules/.bin/hulk:
 
 $(HTML): input.in.intermediate3
 .INTERMEDIATE: input.in.intermediate3
-input.in.intermediate3: node_modules/.bin/hulk interactive-maps/index.js
+input.in.intermediate3: node_modules/.bin/hulk interactive-maps/index.js interactive-maps/leaflet.mustache
 	node interactive-maps/index.js
