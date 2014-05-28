@@ -22,6 +22,7 @@ polys <- vector(mode = "list", length = len)
 dfnames = list()
 msgnames = list()
 
+## https://stat.ethz.ch/pipermail/r-sig-geo/2009-November/007062.html
 for (i in 1:len) {
   pts <- t(as.data.frame(str_split(cuads[[i]], ",")))
   names(pts) <- c('x', 'y')
