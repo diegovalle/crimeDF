@@ -14,12 +14,19 @@
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="js/topojson.v1.min.js"></script>
-    <script type="text/javascript" src="js/chroma.min.js"></script>
     <script src="js/l.control.geosearch.js"></script>
     <script src="js/l.geosearch.provider.google.js"></script>
     <script src="js/d3.v3.min.js"></script>
     <script src="js/colorbrewer.js"></script>
     <style>
+    .tg  {width:100%;border-collapse:collapse;border-spacing:0;border-color:#ccc;border-width:1px;border-style:solid;}
+    .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;border-color:#ccc;color:#333;background-color:#fff;}
+    .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;border-color:#ccc;color:#333;background-color:#f0f0f0;}
+    .tg .tg-4eph{background-color:#f9f9f9}
+    .crime_name{width:60%} 
+    .crime_count{width:20%}
+    .crime_rate{width:20%}
+
     select {
         font-size: 24px;
     }
@@ -132,6 +139,7 @@ scaleRVSV;
 var colorFun;
 var currentName = "hom" + '{{type}}';
 var lastSelect = "Homicides";
+var selector = ".homicide"
 
 //remember this is a mustache template
 var scaleFun;
@@ -256,39 +264,117 @@ function controlLeave() {
    
 
 info.update = function (props) {
+    var div,
+    color = colorbrewer.Reds["9"];
+    div = '<div id="variables" class="menu-ui"><select id="seltarget" autofocus><option value="Homicide">Homicide</option><option value="Violent robberies to a business">Violent robberies to a business</option><option value="Violent car robberies">Violent car robberies</option><option value="Non-violent car robberies">Non-violent car robberies</option></select></div><h1>'+
+        title + '</h1><h3>' +
+        (props ? props.sector + ('{{level}}' === "sectores" ? "" : " / " + props.id) : 'DF (annualized rates Jan 13 - Mar 14)') +'</h3>' + '<div><h4>Total Population: ' +  (props ? '' + comma(props.population) : '8,785,874') +
+        '</h4></div>' +
+        '<table class="tg">' +
+        '<tr>' +
+        '<th class="tg-031e"></th>' +
+        '<th class="tg-031e">Rate</th>' +
+        '<th class="tg-031e">Count</th>' +
+        '</tr>' +
+        '<tr>' +
+        '<td class="crime_name homicides tg-031e">Homicides</td>' +
+        '<td class="crime_rate tg-031e">' + (props ? '' + props.hom_rate : '10.1') +'</td>' +
+        '<td class="crime_count tg-031e">' + (props ? comma(props.hom_count) : '1,114') +'</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td class="crime_name rncv tg-4eph">Violent robberies to a business</td>' +
+        '<td class="tg-4eph">' + (props ? '' + props.rncv_rate : '46.5') +'</td>' +
+        '<td class="tg-4eph">' + (props ? comma(props.rncv_count) : '5,104') +'</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td class="crime_name rvcv tg-031e">Violent car robberies</td>' +
+        '<td class="tg-031e">' + (props ? '' + props.rvcv_rate  : '59.1') +'</td>' +
+        '<td class="tg-031e">' + (props ? comma(props.rvcv_count) : '6,497') +'</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td class="crime_name rvsv tg-4eph">Non-violent car robberies</td>' +
+        '<td class="tg-4eph">' + (props ? props.rvsv_rate  : '135.1') +'</td>' +
+        '<td class="tg-4eph">' + (props ? comma(props.rvsv_count) : '14,842') +'</td>' +
+        '</tr>' +
+        '</table><br/><div class="legend">';
+    
+    switch($("#seltarget").attr('value')) {
+    case "Homicide":
+        colorFun =  scaleHomicide;
+        color = colorbrewer.Reds["9"];
+        selector = ".homicides";
+        break;
+    case "Violent robberies to a business":
+        colorFun =  scaleRNCV;
+        color = colorbrewer.Blues["9"];
+        selector = ".rncv"
+        break;
+    case "Violent car robberies":
+        colorFun =  scaleRVCV;
+        color = colorbrewer.Purples["9"];
+        selector = ".rvcv";
+        break;
+    case "Non-violent car robberies":
+        colorFun =  scaleRVSV;
+        color = colorbrewer.Greens["9"];
+        selector = ".rvsv";
+        break;
+    }
+    for(i = 0; i < 9; i++) {
+        if('{{level}}' != "sectores") { 
+            round1 = Math.ceil;
+            round2 = Math.floor;
+        }
+        else {
+            round1 = d3.round;
+            round2 = d3.round;
+        }
+        
+
+        div  +=
+            '<span id="legendnum' + 
+i +'">' + '<i style="background:' + color[i] + '"></i>' +
+            round1(colorFun.invertExtent(color[i])[0], 1) +" - " +  
+            round2(colorFun.invertExtent(color[i])[1], 1) +'</span><br>';
+    }
     // don't leak
     $("#seltarget").remove();
-    this._div.innerHTML = '<div id="variables" class="menu-ui"><select id="seltarget" autofocus><option value="Homicide">Homicide</option><option value="Violent robberies to a business">Violent robberies to a business</option><option value="Violent car robberies">Violent car robberies</option><option value="Non-violent car robberies">Non-violent car robberies</option></select></div><h1>'+title+'</h1>' + '<h3>' + 
-        (props ? props.sector + ('{{level}}' === "sectores" ? "" : " / " + props.id) : 'DF (annualized rates Jan 13 - Mar 14)') +'</h3>' + '<div><h4>Total Population</h4>' +  (props ? '' + comma(props.population) : '8,785,874') +
-        '</div><div class="hom"><h4>Homicides (<b>rate</b> / count)</h4><b>' +  (props ? '' + props.hom_rate : '10.1') + '</b> / '  +  (props ? comma(props.hom_count) : '1,114') +
-        '</div><div class="rncv"><h4>Violent robberies to a business  (<b>rate</b> / count) </h4><b>' +  (props ? '' + props.rncv_rate : '46.5') + '</b> / '  +  (props ? comma(props.rncv_count) : '5,104') +
-        '</div><div class="rvcv"><h4>Violent car robberies (<b>rate</b> / count) </h4><b>' +  (props ? '' + props.rvcv_rate  : '59.1') + '</b> / '  +  (props ? comma(props.rvcv_count) : '6,497') +
-        '</div><div class="rvsv"><h4>Non-violent car robberies (<b>rate</b> / count) </h4><b>' +  (props ? props.rvsv_rate  : '135.1') + '</b> / '  +  (props ? comma(props.rvsv_count) : '14,842') +'</div>'
+    this._div.innerHTML = div + '</div>';
+    $(selector).css('background-color',color[2]);
     $("#seltarget").val(lastSelect);
     $("#seltarget").change(function() {
-        switch($(this).attr('value')) {
+        $(selector).attr('style', '');
+        //legend.update(lastSelect);
+        switch($("#seltarget").attr('value')) {
         case "Homicide":
             colorFun =  scaleHomicide;
+            color = colorbrewer.Reds["9"];
             currentName ="hom" + '{{type}}';
             lastSelect = "Homicide";
+            selector = ".homicides";
             break;
         case "Violent robberies to a business":
             colorFun =  scaleRNCV;
+            color = colorbrewer.Blues["9"];
             currentName = "rncv" + '{{type}}';
             lastSelect = "Violent robberies to a business";
+            selector = ".rncv";
             break;
         case "Violent car robberies":
             colorFun =  scaleRVCV;
+            color = colorbrewer.Purples["9"];
             currentName = "rvcv" + '{{type}}';
             lastSelect = "Violent car robberies";
+            selector = ".rvcv";
             break;
         case "Non-violent car robberies":
             colorFun =  scaleRVSV;
+            color = colorbrewer.Greens["9"];
             currentName = "rvsv" + '{{type}}';
             lastSelect = "Non-violent car robberies";
+            selector = ".rvsv";
             break;
         }
-        legend.update(lastSelect);
         mxc.eachLayer(function(layer) {
             layer.setStyle({
                 fillColor: colorFun(layer.feature.properties[currentName]),
@@ -296,18 +382,35 @@ info.update = function (props) {
                 weight: 0.5
             });    
         });
+        for(i = 0; i < 9; i++) {
+            if('{{level}}' != "sectores") { 
+                round1 = Math.ceil;
+                round2 = Math.floor;
+            }
+            else {
+                round1 = d3.round;
+                round2 = d3.round;
+            }
+            
+
+            $("#legendnum" + i).html(
+                '<i style="background:' + color[i] + '"></i>' +
+                    round1(colorFun.invertExtent(color[i])[0], 1) +" - " +  
+                    round2(colorFun.invertExtent(color[i])[1], 1)
+            );
+        }
+        $(selector).css('background-color',color[2]);
     });
+    
     if(document.getElementById("seltarget")) {
     document.getElementById("seltarget").onmouseover = controlEnter;
     document.getElementById("seltarget").onmouseout = controlLeave; 
- }
+    }
 
 };
 
-info.addTo(map);
-L.control.layers(baseMaps).addTo(map);
-document.getElementById("seltarget").onmouseover = controlEnter;
-document.getElementById("seltarget").onmouseout = controlLeave; 
+
+
 
 var getStyle = function(feature) {
     return {
@@ -379,13 +482,13 @@ $.getJSON('js/{{level}}-map.json', function (data) {
         return(d3.extent(d3.entries(mxcGeojson), function(d){return(+d.value.properties[name])} ));
     }
     //The scales for the various maps
-    scaleHomicide = createScale(chroma.brewer.Reds,
+    scaleHomicide = createScale(colorbrewer.Reds["9"],
                                 findRange(mxcGeojson, 'hom' + '{{type}}'), 9),
-    scaleRNCV = createScale(chroma.brewer.Blues, 
+    scaleRNCV = createScale(colorbrewer.Blues["9"], 
                             findRange(mxcGeojson, 'rncv' + '{{type}}'), 9),
-    scaleRVCV = createScale(chroma.brewer.Purples, 
+    scaleRVCV = createScale(colorbrewer.Purples["9"], 
                             findRange(mxcGeojson, 'rvcv' + '{{type}}'), 9),
-    scaleRVSV = createScale(chroma.brewer.Greens, 
+    scaleRVSV = createScale(colorbrewer.Greens["9"], 
                             findRange(mxcGeojson, 'rvsv' + '{{type}}'), 9);
     getColor = function(value) {
         return scaleFun(value);
@@ -399,8 +502,13 @@ $.getJSON('js/{{level}}-map.json', function (data) {
         style: getStyle,
         onEachFeature: onEachFeature
     }).addTo(map);
+    
+    //legend.addTo(map);
+    info.addTo(map);
     info.update();
-    legend.addTo(map);
+    document.getElementById("seltarget").onmouseover = controlEnter;
+    document.getElementById("seltarget").onmouseout = controlLeave; 
+    L.control.layers(null,baseMaps, {position: 'topleft'}).addTo(map);
 });
 
 
