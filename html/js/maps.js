@@ -63,6 +63,10 @@ var svgRVSV = d3.select("#map-rvsv").append("svg")
     .attr("width", width)
     .attr("height", height);
 
+var svgVIOL = d3.select("#map-viol").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
 tip = function(crimeCode) {
     return(d3.tip()
     .attr('class', 'd3-tip')
@@ -80,6 +84,8 @@ tipRVCV = tip('rvcv')
 svgRVCV.call(tipRVCV);
 tipRVSV = tip('rvsv');
 svgRVSV.call(tipRVSV);
+tipVIOL = tip('viol');
+svgVIOL.call(tipVIOL);
 
 createMap=function(df, svg, crime, crimeCode, colorFun, titleId, chart, topoNam, tipFun) {
     type = topoName === "cuadrantes" ? "id" : "sector";
@@ -121,7 +127,8 @@ function createLineChart(selection, totalCrime, labelText, color) {
                 [ "x", "2013-01-15", "2013-02-15", "2013-03-15", "2013-04-15", 
                   "2013-05-15", "2013-06-15", "2013-07-15", "2013-08-15", 
                   "2013-09-15", "2013-10-15", "2013-11-15", "2013-12-15", 
-                  "2014-01-15", "2014-02-15", "2014-03-15" ],
+                  "2014-01-15", "2014-02-15", "2014-03-15", "2014-04-15",
+                  "2014-05-15", "2014-06-15", "2014-07-15" ],
                 totalCrime
             ],
             color: function(d) {return color}
@@ -179,14 +186,17 @@ d3.json(mapFile, function(error, df) {
         quantizeBlue = createQuantized(findRange('rncv'), "Bluesq")
         quantizePurple = createQuantized(findRange('rvcv'), "Purplesq")
         quantizeGreen = createQuantized(findRange('rvsv'), "Greensq")
+        quantizeGreen2 = createQuantized(findRange('viol'), "Greensq")
         createMap(df, svgHomicide, 'Homicides','hom', quantizeRed, '#homicide-title', chartHomicides, topoName, tipHom);
         createMap(df, svgRNCV, 'Violent robberies to a business', 'rncv', quantizeBlue, '#rncv-title', chartrncv, topoName, tipRNCV);
         createMap(df, svgRVCV, 'Violent car robberies', 'rvcv', quantizePurple, '#rvcv-title', chartrvcv, topoName, tipRVCV);
         createMap(df, svgRVSV, 'Non-violent car robberies', 'rvsv', quantizeGreen, '#rvsv-title', chartrvsv, topoName, tipRVSV);
+        createMap(df, svgVIOL, 'Rape', 'viol', quantizeGreen2, '#viol-title', chartviol, topoName, tipVIOL);
         createLegend('#legend-homicides', quantizeRed)
         createLegend('#legend-rncv', quantizeBlue)
         createLegend('#legend-rvcv', quantizePurple)
         createLegend('#legend-rvsv', quantizeGreen)
+        createLegend('#legend-viol', quantizeGreen2)
     });
 });
 
@@ -208,3 +218,7 @@ chartrvcv = createLineChart('#chart-rvcv',
 chartrvsv = createLineChart('#chart-rvsv',
                             rvsvA,
                             crimePrefix + 'non-violent car robberies','rgb(0,68,27)')
+
+chartviol = createLineChart('#chart-viol',
+                            violA,
+                            crimePrefix + 'rapes','rgb(0,68,27)')

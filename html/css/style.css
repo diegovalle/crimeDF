@@ -961,7 +961,8 @@
 	#header-wrapper
 	{
 		position: relative;
-		background: #fff;
+		background: #EADBC4;
+                background-image:url(../images/background.png);
 		text-align: center;
 	}
 
@@ -1023,7 +1024,8 @@
 		position: relative;
 		overflow: hidden;
 		border-top: solid 2px #e5e5e5;
-		background: #f0f0f0;
+		background: #453D3F;
+                color: #fff;
 	}
 	
 		#footer-wrapper form input.text,

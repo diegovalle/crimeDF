@@ -63,7 +63,7 @@
                                             </div>
                                             <div class="4u">
                                               <div id="map-homicide" style="height:500px;">
-                                                <small style="font-size:12px;text-align:left;">total homicides from Jan 13 to Mar 14</small>
+                                                <small style="font-size:12px;text-align:left;">total homicides from August 2013 to July 2014</small>
                                                 <div id = "legend-homicides"></div>
                                               </div>
                                             </div>
@@ -79,7 +79,7 @@
                                             </div>
                                             <div class="4u">
                                               <div id="map-rncv" style="height:500px">
-                                                <small style="font-size:12px;text-align:left;">total homicides from Jan 13 to Mar 14</small>
+                                                <small style="font-size:12px;text-align:left;">total violent robberies to a business from August 2013 to July 2014</small>
                                                 <div id = "legend-rncv"></div>
                                               </div>
                                             </div>
@@ -94,7 +94,7 @@
                                             </div>
                                             <div class="4u">
                                               <div id="map-rvcv" style="height:500px">
-                                                <small style="font-size:12px;text-align:left;">total homicides from Jan 13 to Mar 14</small>
+                                                <small style="font-size:12px;text-align:left;">total violent car robberies from August 2013 to July 2014</small>
                                                  <div id = "legend-rvcv"></div>
                                               </div>
                                             </div>
@@ -109,8 +109,23 @@
                                             </div>
                                             <div class="4u">
                                               <div id="map-rvsv" style="height:500px">
-                                                <small style="font-size:12px;text-align:left;">total homicides from Jan 13 to Mar 14</small>
+                                                <small style="font-size:12px;text-align:left;">total non-violent car robberies from August 2013 to July 2014</small>
                                                  <div id = "legend-rvsv"></div>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <hr/>
+                                          <h2 id="rvsv-title">Rape - Total</h2>
+                                          <div class="row">
+					    
+                                            <div class="7u">
+                                              <div class="chart-crime" id="chart-viol"></div>
+                                            </div>
+                                            <div class="4u">
+                                              <div id="map-viol" style="height:500px">
+                                                <small style="font-size:12px;text-align:left;">total rapes from August 2013 to July 2014</small>
+                                                 <div id = "legend-viol"></div>
                                               </div>
                                             </div>
                                           </div>
@@ -202,11 +217,11 @@ var topoName = 'cuadrantes';
 var mapFile = "js/cuadrantes.json";
 var crimeFile = "js/hom-dol-cuad.js";
 
-var HomicidesA = ['Homicides', 66, 80, 94, 76, 99, 91, 61, 79, 
-                 60, 70, 62, 61, 70, 54, 91 ];
-var rncvA = ['Violent robberies to a business', 380, 348, 352, 293, 329, 375, 357, 368, 364, 374, 410, 340, 326, 254, 234 ];
-var rvcvA = ['Violent car robberies', 443, 415, 356, 369, 444, 409, 422, 442, 412, 512, 553, 434, 500, 395, 391 ];
-var rvsvA = ['Non-violent car robberies', 1016, 937, 905, 1009, 1037, 1062, 982, 1051, 965, 995, 1057, 998, 1046, 911, 871 ];
+var HomicidesA = ['Homicides', 62, 81, 89, 76, 97, 90, 59, 78, 60, 68, 60, 58, 69, 54, 90, 76, 62, 78, 70, 47 ];
+var rncvA = ['Violent robberies to a business', 389, 355, 355, 297, 328, 361, 379, 363, 348, 374, 420, 348, 306, 270, 248, 278, 260, 287, 365, 242  ];
+var rvcvA = ['Violent car robberies', 488, 492, 432, 434, 503, 487, 470, 501, 457, 587, 612, 510, 560, 493, 506, 474, 507, 457, 544, 321 ];
+var rvsvA = ['Non-violent car robberies', 944, 851, 850, 912, 949, 990, 930, 990, 903, 917, 971, 931, 980, 825, 864, 803, 884, 708, 807, 556 ];
+var violA = ['Rape',64, 64, 46, 34, 40, 36, 45, 46, 27, 44, 34, 33, 23, 35, 46, 41, 51, 38, 43, 31 ];
 crimePrefix = 'number of ';
 </script>
 <script src="js/maps.js"></script>
