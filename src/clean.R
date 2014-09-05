@@ -1,34 +1,26 @@
 ## Clean the sspdf crime data from the pdf turned into 3 excel files
 
 mcrime <- local({
-  crime_names <- c("Robo a negocio C/V",
-                   "Robo de vehiculo automotor S/V",
-                   "Robo de vehiculo automotor C/V",
-                   "Homicidio doloso")
-  readExcel <- function(fileName, n) {
-    crime <- data.frame()
-    for(i in 1:n) {
-      df <- read.xls(file.path("sspdf-data", fileName),
-                     sheet = i)
-      df <- df[3:nrow(df),]
-      names(df) <- c("crime", 
-                     as.character(as.yearmon(seq(as.Date("2013-01-01"), 
-                                                 as.Date("2013-12-01"), 
-                                                 "month"))),
-                     "Total13", 
-                     as.character(as.yearmon(seq(as.Date("2014-01-01"), 
-                                                 as.Date("2014-04-01"), 
-                                                 "month"))),
-                     "Total14", "Total.General")
-      crime <- rbind(crime, df)
-    }
-    return(crime)
+  readCSV <- function(fileName, skipRows, removeCols, lastDate ) {
+    
+    df <- read.csv(file.path("sspdf-data",  fileName),
+                   skip = skipRows, header = FALSE)
+    df <- df[ ,1:(ncol(df)-removeCols)]
+    names(df) <- c("crime", 
+                   as.character(as.yearmon(seq(as.Date("2013-01-01"), 
+                                               as.Date("2013-12-01"), 
+                                               "month"))),
+                   "Total13", 
+                   as.character(as.yearmon(seq(as.Date("2014-01-01"), 
+                                               as.Date(lastDate), 
+                                               "month"))),
+                   "Total14", "Total.General")
+    return(df)
   }
   
-  crime <- rbind(readExcel("(282553956) ArchivoSPIHibrido.1-50.xls", 50),
-                 readExcel("(282554796) ArchivoSPIHibrido.51-100.xls", 50))
-  crime <- rbind(crime,
-                 readExcel("(282554953) ArchivoSPIHibrido.101-122.xls", 22))  
+  
+  crime <- readCSV(fileName, skipRows, removeCols, lastDate)
+  
   
   crime$cuadrante <- NA
   
@@ -61,6 +53,7 @@ mcrime <- local({
   mcrime$value <- str_replace(mcrime$value, "", "0")
   mcrime$value <- as.numeric(mcrime$value)
   mcrime[is.na(mcrime)] <- 0
+  
   
   
   mcrime

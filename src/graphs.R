@@ -8,7 +8,7 @@ ggplot(subset(date.total, crime == "Homicidio doloso"),
        aes(as.Date(date), count)) +
   geom_line()
 ggsave(file.path("graphs", "incomplete.png"), dpi = 100, width = 6, height = 4)
-mcrime <- subset(mcrime, date != "Apr 2014")
+mcrime <- subset(mcrime, !date %in% badMonths)
 
 ## How many cuadrantes belong to an undefined Sector?
 unique(mcrime$cuadrante[is.na(mcrime$sector)])
@@ -75,6 +75,7 @@ ggplot(sector.map, aes(long, lat, group = group, fill = rate), color = "gray") +
 ggsave(file.path("graphs", "map-sector-rate.png"), dpi = 100, width = 7, height = 7)
 
 
+
 ## Total crimes by date and crime type
 date.crime <- ddply(mcrime, .(crime, date), summarise,
                     count = sum(count))
@@ -117,4 +118,7 @@ ggsave(file.path("graphs", "total-sector-rvcv.png"), dpi = 100, width = 10, heig
 
 plotSectorRates(date.sectores, "Car robbery without violence", "Robo de vehiculo automotor S/V")
 ggsave(file.path("graphs", "total-sector-rvsv.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates(date.sectores, "Rape", "Violacion")
+ggsave(file.path("graphs", "total-sector-viol.png"), dpi = 100, width = 10, height = 7)
 
