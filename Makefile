@@ -16,7 +16,7 @@ all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json \
      node_modules/.bin/hulk $(HTML)
 
 clean:
-	rm -rf $(JSON) cuadrante-shps/cuadrantes-sspdf.shp $(R) $(HTML)
+	rm -rf $(JSON) html/js/sectores.json html/js/cuadrantes.json cuadrante-shps/cuadrantes-sspdf.shp $(R) $(HTML)
 
 
 
@@ -33,16 +33,16 @@ cuadrante-shps/cuadrantes-sspdf.shp: create-sspdf-shp.R $(JSON)
 	touch $@
 
 ## Create a projected topojson useful for the leaflet map
-html/js/cuadrantes-map.json: cuadrante-shps/cuadrantes-sspdf-poblacion.shp
+html/js/cuadrantes-map.json: cuadrante-shps/cuadrantes-sspdf.shp
 	topojson --id-property=id \
 	--external-properties data/interactive-cuadrantes.csv \
 	-s 1e-10 \
 	-o $@ \
-	--properties id,sector,population,id,hom_rate,rncv_rate,rvcv_rate,rvsv_rate,hom_count,rncv_count,rvcv_count,rvsv_count \
+	--properties id,sector,population,id,hom_rate,rncv_rate,rvcv_rate,rvsv_rate,viol_ratehom_count,rncv_count,rvcv_count,rvsv_count,viol_count \
 	-- cuadrantes=$^
 
 ## Unprojected topojson of the police cuadrantes
-html/js/cuadrantes.json: cuadrante-shps/cuadrantes-sspdf-poblacion.shp
+html/js/cuadrantes.json: cuadrante-shps/cuadrantes-sspdf.shp
 #topojson --id-property=id -s 1e-9  -o $@ --properties sector,id -- cuadrantes=$^
 	topojson \
 	--width 960 \
@@ -50,10 +50,10 @@ html/js/cuadrantes.json: cuadrante-shps/cuadrantes-sspdf-poblacion.shp
 	--margin 0 \
 	--external-properties data/topo-cuadrantes.csv \
 	--id-property=id  \
-	-s .1 \
+        -s 1e-10 \
 	--projection 'd3.geo.mercator()' \
 	-o $@ \
-	--properties sector,id,hom,rncv,rvcv,rvsv \
+	--properties sector,id,hom,rncv,rvcv,rvsv,viol \
 	cuadrantes=$^
 
 ## Projected Sectores topojson for the leaflet map
@@ -62,7 +62,7 @@ html/js/sectores-map.json: cuadrante-shps/sectores.shp
         --external-properties data/interactive-sectores.csv \
 	-s 1e-10 \
         -o $@ \
-        --properties sector,population,id,hom_rate,rncv_rate,rvcv_rate,rvsv_rate,hom_count,rncv_count,rvcv_count,rvsv_count \
+        --properties sector,population,id,hom_rate,rncv_rate,rvcv_rate,rvsv_rate,viol_rate,hom_count,rncv_count,rvcv_count,rvsv_count,viol_count \
         -- sectores=$^	
 
 ## Unprojected topojson of the police sectors (made up of many cuadrantes)
@@ -76,7 +76,7 @@ html/js/sectores.json: cuadrante-shps/sectores.shp
 	-s .9 \
 	--projection 'd3.geo.mercator()' \
 	-o $@ \
-	--properties sector,id,hom,rncv,rvcv,rvsv \
+	--properties sector,id,hom,rncv,rvcv,rvsv,viol \
 	sectores=$^
 
 $(R): input.in.intermediate2
