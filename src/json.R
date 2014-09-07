@@ -28,7 +28,7 @@ formatSectorForJSON <- function(mcrime, crime.type) {
   js <- ddply(subset(mcrime[order(mcrime$sector, mcrime$date),], 
                      crime == crime.type),
               .(sector, date), summarise, 
-              count = (sum(count) / sum(population)) * 10^5 * 12,
+              count = (sum(count) / sum(population, na.rm = TRUE)) * 10^5 * 12,
               population = sum(population))
   
   js <- subset(js, sector != "(en blanco)")
@@ -103,7 +103,7 @@ js <- list(hom=formatSectorForJSON(mcrime, "Homicidio doloso"),
            rncv=formatSectorForJSON(mcrime, "Robo a negocio C/V"),
            rvcv=formatSectorForJSON(mcrime, "Robo de vehiculo automotor C/V"),
            rvsv=formatSectorForJSON(mcrime, "Robo de vehiculo automotor S/V"),
-           viol=formatCuadranteForJSON(mcrime, "Violacion"))
+           viol=formatSectorForJSON(mcrime, "Violacion"))
 js <- toJSON(js, dataframe = "column")
 fh <- file("html/js/hom-dol-sector.js", "w")
 writeLines(js, fh)

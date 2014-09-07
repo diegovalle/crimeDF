@@ -33,16 +33,16 @@ cuadrante-shps/cuadrantes-sspdf.shp: create-sspdf-shp.R $(JSON)
 	touch $@
 
 ## Create a projected topojson useful for the leaflet map
-html/js/cuadrantes-map.json: cuadrante-shps/cuadrantes-sspdf.shp
+html/js/cuadrantes-map.json: cuadrante-shps/cuadrantes-sspdf-no-errors2.shp
 	topojson --id-property=id \
 	--external-properties data/interactive-cuadrantes.csv \
 	-s 1e-10 \
 	-o $@ \
-	--properties id,sector,population,id,hom_rate,rncv_rate,rvcv_rate,rvsv_rate,viol_ratehom_count,rncv_count,rvcv_count,rvsv_count,viol_count \
+	--properties id,sector,population,id,hom_rate,rncv_rate,rvcv_rate,rvsv_rate,viol_rate,hom_count,rncv_count,rvcv_count,rvsv_count,viol_count \
 	-- cuadrantes=$^
 
 ## Unprojected topojson of the police cuadrantes
-html/js/cuadrantes.json: cuadrante-shps/cuadrantes-sspdf.shp
+html/js/cuadrantes.json: cuadrante-shps/cuadrantes-sspdf-no-errors2.shp
 #topojson --id-property=id -s 1e-9  -o $@ --properties sector,id -- cuadrantes=$^
 	topojson \
 	--width 960 \

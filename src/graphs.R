@@ -8,7 +8,7 @@ ggplot(subset(date.total, crime == "Homicidio doloso"),
        aes(as.Date(date), count)) +
   geom_line()
 ggsave(file.path("graphs", "incomplete.png"), dpi = 100, width = 6, height = 4)
-mcrime <- subset(mcrime, !date %in% badMonths)
+mcrime <- subset(mcrime, !date %in% as.yearmon(badMonths))
 
 ## How many cuadrantes belong to an undefined Sector?
 unique(mcrime$cuadrante[is.na(mcrime$sector)])
@@ -101,7 +101,8 @@ plotSectorRates <- function(df, crime, sub) {
     #geom_smooth(method="loess", se = FALSE)  +
     #scale_y_continuous(limits = c(0, 140), breaks = c(0, 100)) +
     theme(strip.text.x = element_text(size = 6)) +
-    ggtitle(str_c(crime, " rates in the DF")) +
+    ggtitle(str_c(crime, " rates in the DF, by sector (", min(df$date), " - ",
+                  max(df$date), ")")) +
     xlab("date") +
     ylab("rate") +
     theme(axis.text.x = element_text(angle = 60, hjust = 1))

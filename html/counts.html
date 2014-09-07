@@ -60,6 +60,7 @@
 					    
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-homicide"></div>
+                                              <a href="#" class="button" id="HomicideButton">Reset Chart to show all DF data</a>
                                             </div>
                                             <div class="4u">
                                               <div id="map-homicide" style="height:500px;">
@@ -76,6 +77,7 @@
 					    
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-rncv"></div>
+<a href="#" class="button" id="RNCVButton">Reset Chart to show all DF data</a>
                                             </div>
                                             <div class="4u">
                                               <div id="map-rncv" style="height:500px">
@@ -91,6 +93,7 @@
 					    
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-rvcv"></div>
+                                              <a href="#" class="button" id="RVCVButton">Reset Chart to show all DF data</a>
                                             </div>
                                             <div class="4u">
                                               <div id="map-rvcv" style="height:500px">
@@ -106,6 +109,7 @@
 					    
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-rvsv"></div>
+                                              <a href="#" class="button" id="RVSVButton">Reset Chart to show all DF data</a>
                                             </div>
                                             <div class="4u">
                                               <div id="map-rvsv" style="height:500px">
@@ -121,6 +125,7 @@
 					    
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-viol"></div>
+                                              <a href="#" class="button" id="RapeButton">Reset Chart to show all DF data</a>
                                             </div>
                                             <div class="4u">
                                               <div id="map-viol" style="height:500px">
@@ -223,6 +228,35 @@ var rvcvA = ['Violent car robberies', 488, 492, 432, 434, 503, 487, 470, 501, 45
 var rvsvA = ['Non-violent car robberies', 944, 851, 850, 912, 949, 990, 930, 990, 903, 917, 971, 931, 980, 825, 864, 803, 884, 708, 807, 556 ];
 var violA = ['Rape',64, 64, 46, 34, 40, 36, 45, 46, 27, 44, 34, 33, 23, 35, 46, 41, 51, 38, 43, 31 ];
 crimePrefix = 'number of ';
+document.getElementById("HomicideButton").onclick = function () { 
+event.preventDefault(); 
+chartHomicides.load({
+                columns: [HomicidesA],
+            }); };
+
+document.getElementById("RNCVButton").onclick = function () { 
+event.preventDefault(); 
+chartrncv.load({
+                columns: [rncvA],
+            }); };
+
+document.getElementById("RVCVButton").onclick = function () { 
+event.preventDefault(); 
+chartrvcv.load({
+                columns: [rvcvA],
+            }); };
+
+document.getElementById("RVSVButton").onclick = function () { 
+event.preventDefault(); 
+chartrvsv.load({
+                columns: [rvsvA],
+            }); };
+
+document.getElementById("RapeButton").onclick = function () { 
+event.preventDefault(); 
+chartviol.load({
+                columns: [violA],
+            }); };
 </script>
 <script src="js/maps.js"></script>
 <script id="deferedjs" type="text/javascript">

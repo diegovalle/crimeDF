@@ -54,7 +54,12 @@
 			letter-spacing: 2px;
 			padding: 0.85em 2.75em 0.85em 2.75em;
 		}
-		
+		.button {
+font-size: 0.8em;
+letter-spacing: 1px;
+padding: 0.5em 0.5em 0.5em 0.5em;
+color:#070707;
+}
 	/* Lists */
 
 		ul.actions

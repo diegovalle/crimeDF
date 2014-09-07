@@ -62,12 +62,14 @@
                                            
 					    <div class="4u">
                                               <div id="map-homicide" style="height:500px;">
-                                                <small style="font-size:12px;text-align:left;">rate from August 2013 to July 2014</small>
+                                                <small style="font-size:12px;text-align:left;">homicide rate from August 2013 to July 2014</small>
                                                 <div id = "legend-homicides"></div>
                                               </div>
                                             </div>
                                             <div class="7u">
+                                              
                                               <div class="chart-crime" id="chart-homicide"></div>
+                                              <a href="#" class="button" id="HomicideButton">Reset Chart to show all DF data</a>
                                             </div>
                                           
                                           </div>
@@ -76,12 +78,13 @@
                                           <div class="row">
 					    <div class="4u">
                                               <div id="map-rncv" style="height:500px">
-                                                <small style="font-size:12px;text-align:left;">rate from August 2013 to July 2014</small>
+                                                <small style="font-size:12px;text-align:left;">violent robbery to a business rate from August 2013 to July 2014</small>
                                                 <div id = "legend-rncv"></div>
                                               </div>
                                             </div>
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-rncv"></div>
+                                              <a href="#" class="button" id="RNCVButton">Reset Chart to show all DF data</a>
                                             </div>
                                           </div>
 <hr/>
@@ -89,12 +92,13 @@
                                           <div class="row">
 					    <div class="4u">
                                               <div id="map-rvcv" style="height:500px">
-                                                <small style="font-size:12px;text-align:left;">rate from August 2013 to July 2014</small>
+                                                <small style="font-size:12px;text-align:left;">violent car robbery rate from August 2013 to July 2014</small>
                                                  <div id = "legend-rvcv"></div>
                                               </div>
                                             </div>
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-rvcv"></div>
+                                              <a href="#" class="button" id="RVCVButton">Reset Chart to show all DF data</a>
                                             </div>
                                           </div>
 <hr/>
@@ -102,12 +106,13 @@
                                           <div class="row">
 					    <div class="4u">
                                               <div id="map-rvsv" style="height:500px">
-                                                <small style="font-size:12px;text-align:left;">rate from August 2013 to July 2014</small>
+                                                <small style="font-size:12px;text-align:left;">non-violent car robbery rate from August 2013 to July 2014</small>
                                                  <div id = "legend-rvsv"></div>
                                               </div>
                                             </div>
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-rvsv"></div>
+                                              <a href="#" class="button" id="RVSVButton">Reset Chart to show all DF data</a>
                                             </div>
                                           </div>
 
@@ -117,12 +122,13 @@
                                            
 					    <div class="4u">
                                               <div id="map-viol" style="height:500px;">
-                                                <small style="font-size:12px;text-align:left;">rate from August 2013 to July 2014</small>
+                                                <small style="font-size:12px;text-align:left;">rape rate from August 2013 to July 2014</small>
                                                 <div id = "legend-viol"></div>
                                               </div>
                                             </div>
                                             <div class="7u">
                                               <div class="chart-crime" id="chart-viol"></div>
+                                              <a href="#" class="button" id="RapeButton">Reset Chart to show all DF data</a>
                                             </div>
                                           
                                           </div>
@@ -216,12 +222,41 @@ var topoName = 'sectores';
 var mapFile = "js/sectores.json";
 var crimeFile = "js/hom-dol-sector.js";
 
-var HomicidesA = ['Homicides',8.47, 11.06, 12.16, 10.38, 13.25, 12.29, 8.06, 10.65, 8.19, 9.29, 8.19, 7.92, 9.42, 7.38, 12.29, 10.38, 8.47, 10.65, 9.56, 6.42 ];
-var rncvA = ['Violent robberies to a business', 53.13, 48.49, 48.49, 40.57, 44.8, 49.31, 51.76, 49.58, 47.53, 51.08, 57.36, 47.53, 41.79, 36.88, 33.87, 37.97, 35.51, 39.2, 49.85, 33.05 ];
-var rvcvA = ['Violent car robberies', 66.65, 67.2, 59, 59.28, 68.7, 66.52, 64.19, 68.43, 62.42, 80.17, 83.59, 69.66, 76.49, 67.34, 69.11, 64.74, 69.25, 62.42, 74.3, 43.84 ];
-var rvsvA = ['Non-violent car robberies', 128.93, 116.23, 116.1, 124.56, 129.62, 135.22, 127.02, 135.22, 123.33, 125.25, 132.62, 127.16, 133.85, 112.68, 118.01, 109.68, 120.74, 96.7, 110.22, 75.94 ];
-var violA = ['Rape', 8.74, 8.74, 6.28, 4.64, 5.46, 4.92, 6.15, 6.28, 3.69, 6.01, 4.64, 4.51, 3.14, 4.78, 6.28, 5.6, 6.97, 5.19, 5.87, 4.23 ]
+var HomicidesA = ['Homicide rate',8.47, 11.06, 12.16, 10.38, 13.25, 12.29, 8.06, 10.65, 8.19, 9.29, 8.19, 7.92, 9.42, 7.38, 12.29, 10.38, 8.47, 10.65, 9.56, 6.42 ];
+var rncvA = ['Violent robbery to a business rate', 53.13, 48.49, 48.49, 40.57, 44.8, 49.31, 51.76, 49.58, 47.53, 51.08, 57.36, 47.53, 41.79, 36.88, 33.87, 37.97, 35.51, 39.2, 49.85, 33.05 ];
+var rvcvA = ['Violent car robbery rate', 66.65, 67.2, 59, 59.28, 68.7, 66.52, 64.19, 68.43, 62.42, 80.17, 83.59, 69.66, 76.49, 67.34, 69.11, 64.74, 69.25, 62.42, 74.3, 43.84 ];
+var rvsvA = ['Non-violent car robbery rate', 128.93, 116.23, 116.1, 124.56, 129.62, 135.22, 127.02, 135.22, 123.33, 125.25, 132.62, 127.16, 133.85, 112.68, 118.01, 109.68, 120.74, 96.7, 110.22, 75.94 ];
+var violA = ['Rape rate', 8.74, 8.74, 6.28, 4.64, 5.46, 4.92, 6.15, 6.28, 3.69, 6.01, 4.64, 4.51, 3.14, 4.78, 6.28, 5.6, 6.97, 5.19, 5.87, 4.23 ]
 crimePrefix = 'rate of ';
+document.getElementById("HomicideButton").onclick = function () { 
+event.preventDefault(); 
+chartHomicides.load({
+                columns: [HomicidesA],
+            }); };
+
+document.getElementById("RNCVButton").onclick = function () { 
+event.preventDefault(); 
+chartrncv.load({
+                columns: [rncvA],
+            }); };
+
+document.getElementById("RVCVButton").onclick = function () { 
+event.preventDefault(); 
+chartrvcv.load({
+                columns: [rvcvA],
+            }); };
+
+document.getElementById("RVSVButton").onclick = function () { 
+event.preventDefault(); 
+chartrvsv.load({
+                columns: [rvsvA],
+            }); };
+
+document.getElementById("RapeButton").onclick = function () { 
+event.preventDefault(); 
+chartviol.load({
+                columns: [violA],
+            }); };
 </script>
 <script src="js/maps.js"></script>
 <script id="deferedjs" type="text/javascript">
