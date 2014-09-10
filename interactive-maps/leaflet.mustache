@@ -289,7 +289,7 @@ info.update = function (props) {
     config.color = colorbrewer.Reds["9"];
     div = '<div id="variables" class="menu-ui"><select id="seltarget" autofocus><option value="Homicide">Homicide</option><option value="Violent robberies to a business">Violent robberies to a business</option><option value="Violent car robberies">Violent car robberies</option><option value="Non-violent car robberies">Non-violent car robberies</option><option value="Rape">Rape</option></select></div><h1>'+
         title + '</h1><h3>' +
-        (props ? props.sector + ('{{level}}' === "sectores" ? "" : " / " + props.id) : 'DF (annualized rates Jan 13 - Mar 14)') +'</h3>' + '<div><h4>Total Population: ' +  (props ? '' + comma(props.population) : '8,785,874') +
+        (props ? props.sector + ('{{level}}' === "sectores" ? "" : " / " + props.id) : 'DF (Aug 13 - Jul 14)') +'</h3>' + '<div><h4>Total Population: ' +  (props ? '' + comma(props.population) : '8,785,874') +
         '</h4></div>' +
         '<table class="tg">' +
         '<tr>' +
@@ -299,28 +299,28 @@ info.update = function (props) {
         '</tr>' +
         '<tr>' +
         '<td class="crime_name homicides tg-031e">Homicides</td>' +
-        '<td class="crime_rate tg-031e' + ('{{level}}' === "sectores" ? " homicides " : "")  + '">' + (props ? '' + props.hom_rate : '10.1') +'</td>' +
-        '<td class="crime_count tg-031e' + ('{{level}}' === "sectores" ? "" : " homicides ")  + '">' + (props ? comma(props.hom_count) : '1,114') +'</td>' +
+        '<td class="crime_rate tg-031e' + ('{{level}}' === "sectores" ? " homicides " : "")  + '">' + (props ? '' + props.hom_rate : homTotalRate) +'</td>' +
+        '<td class="crime_count tg-031e' + ('{{level}}' === "sectores" ? "" : " homicides ")  + '">' + (props ? comma(props.hom_count) : comma(homTotal)) +'</td>' +
         '</tr>' +
         '<tr>' +
         '<td class="crime_name rncv tg-4eph">Violent robberies to a business</td>' +
-        '<td class="tg-4eph' + ('{{level}}' === "sectores" ? " rncv " : "")  + '">' + (props ? '' + props.rncv_rate : '46.5') +'</td>' +
-        '<td class="tg-4eph' + ('{{level}}' === "sectores" ? "" : " rncv ")  + '">' + (props ? comma(props.rncv_count) : '5,104') +'</td>' +
+        '<td class="tg-4eph' + ('{{level}}' === "sectores" ? " rncv " : "")  + '">' + (props ? '' + props.rncv_rate : rncvTotalRate) +'</td>' +
+        '<td class="tg-4eph' + ('{{level}}' === "sectores" ? "" : " rncv ")  + '">' + (props ? comma(props.rncv_count) : comma(rncvTotal)) +'</td>' +
         '</tr>' +
         '<tr>' +
         '<td class="crime_name rvcv tg-031e">Violent car robberies</td>' +
-        '<td class="tg-031e' + ('{{level}}' === "sectores" ? " rvcv " : "")  + '">' + (props ? '' + props.rvcv_rate  : '59.1') +'</td>' +
-        '<td class="tg-031e' + ('{{level}}' === "sectores" ? "" : " rvcv ")  + '">' + (props ? comma(props.rvcv_count) : '6,497') +'</td>' +
+        '<td class="tg-031e' + ('{{level}}' === "sectores" ? " rvcv " : "")  + '">' + (props ? '' + props.rvcv_rate  : rvcvTotalRate) +'</td>' +
+        '<td class="tg-031e' + ('{{level}}' === "sectores" ? "" : " rvcv ")  + '">' + (props ? comma(props.rvcv_count) : comma(rvcvTotal)) +'</td>' +
         '</tr>' +
         '<tr>' +
         '<td class="crime_name rvsv tg-4eph">Non-violent car robberies</td>' +
-        '<td class="tg-4eph' + ('{{level}}' === "sectores" ? " rvsv " : "")  + '">' + (props ? props.rvsv_rate  : '135.1') +'</td>' +
-        '<td class="tg-4eph' + ('{{level}}' === "sectores" ? "" : " rvsv ")  + '">' + (props ? comma(props.rvsv_count) : '14,842') +'</td>' +
+        '<td class="tg-4eph' + ('{{level}}' === "sectores" ? " rvsv " : "")  + '">' + (props ? props.rvsv_rate  : rvsvTotalRate) +'</td>' +
+        '<td class="tg-4eph' + ('{{level}}' === "sectores" ? "" : " rvsv ")  + '">' + (props ? comma(props.rvsv_count) : comma(rvsvTotal)) +'</td>' +
         '</tr>' +
         '<tr>' +
         '<td class="crime_name viol tg-4eph">Rape</td>' +
-        '<td class="tg-031e' + ('{{level}}' === "sectores" ? " viol " : "")  + '">' + (props ? props.viol_rate  : '135.1') +'</td>' +
-        '<td class="tg-031e' + ('{{level}}' === "sectores" ? "" : " viol ")  + '">' + (props ? comma(props.viol_count) : '14,842') +'</td>' +
+        '<td class="tg-031e' + ('{{level}}' === "sectores" ? " viol " : "")  + '">' + (props ? props.viol_rate  : violTotalRate) +'</td>' +
+        '<td class="tg-031e' + ('{{level}}' === "sectores" ? "" : " viol ")  + '">' + (props ? comma(props.viol_count) : comma(violTotal)) +'</td>' +
         '</tr>' +
         '</table><br/><div class="legend">';
     
@@ -405,6 +405,7 @@ function onEachFeature(feature, layer) {
 
 
 $.getJSON('js/{{level}}-map.json', function (data) {
+                
     var mxcGeojson = topojson.feature(data, data.objects.{{level}}).features;
     
     var featureCollection = {
@@ -474,7 +475,7 @@ $.getJSON('js/{{level}}-map.json', function (data) {
 
 
 
-
+homTotal = 823,rncvTotal = 3867,rvcvTotal = 6208,rvsvTotal = 10583,violTotal = 461,homTotalRate = 9.4,rncvTotalRate = 44,rvcvTotalRate = 70.7,rvsvTotalRate = 120.5,violTotalRate = 5.2;
 
 // var $select = $('<select></select>')
 //     .appendTo($('#variables'))

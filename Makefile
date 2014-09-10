@@ -12,8 +12,8 @@ HTML = html/cuadrantes.html html/sectores.html
 
 all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json \
      html/js/sectores.json html/js/sectores-map.json \
-     html/js/cuadrantes-map.json $(R) \
-     node_modules/.bin/hulk $(HTML)
+     html/js/cuadrantes-map.json html/js/cuadrantes-diff.json $(R) \
+     node_modules/.bin/hulk html/counts.html html/index.html $(HTML)
 
 clean:
 	rm -rf $(JSON) html/js/sectores.json html/js/cuadrantes.json cuadrante-shps/cuadrantes-sspdf.shp $(R) $(HTML)
@@ -56,6 +56,21 @@ html/js/cuadrantes.json: cuadrante-shps/cuadrantes-sspdf-no-errors2.shp
 	--properties sector,id,hom,rncv,rvcv,rvsv,viol \
 	cuadrantes=$^
 
+## Unprojected topojson of the police cuadrantes for the difference map
+html/js/cuadrantes-diff.json: cuadrante-shps/cuadrantes-sspdf-no-errors2.shp
+#topojson --id-property=id -s 1e-9  -o $@ --properties sector,id -- cuadrantes=$^
+	topojson \
+	--width 960 \
+	--height 800 \
+	--margin 0 \
+	--external-properties data/topo-cuadrantes-diff.csv \
+	--id-property=id  \
+	-s 1e-10 \
+	--projection 'd3.geo.mercator()' \
+	-o $@ \
+	--properties sector,id,hom,rncv,rvcv,rvsv,viol \
+	cuadrantes=$^
+
 ## Projected Sectores topojson for the leaflet map
 html/js/sectores-map.json: cuadrante-shps/sectores.shp
 	topojson --id-property=sector \
@@ -78,6 +93,13 @@ html/js/sectores.json: cuadrante-shps/sectores.shp
 	-o $@ \
 	--properties sector,id,hom,rncv,rvcv,rvsv,viol \
 	sectores=$^
+
+html/counts.html: interactive-maps/counts.html
+	sed --e '/\<tablehom\>/{r interactive-maps/table-hom-cuadrantes.html' -e 'd}' --e '/\<tablerncv\>/{r interactive-maps/table-rncv-cuadrantes.html' -e 'd}' --e '/\<tablervcv\>/{r interactive-maps/table-rvcv-cuadrantes.html' -e 'd}' --e '/\<tablervsv\>/{r interactive-maps/table-rvsv-cuadrantes.html' -e 'd}' --e '/\<tableviol\>/{r interactive-maps/table-viol-cuadrantes.html' -e 'd}' --e '/\<vecCuadrantes\>/{r interactive-maps/vecCuadrantes.txt' -e 'd}'  interactive-maps/counts.html > html/counts.html
+
+html/index.html: interactive-maps/index.html
+	sed --e '/\<tablehom\>/{r interactive-maps/table-hom-sectores.html' -e 'd}' --e '/\<tablerncv\>/{r interactive-maps/table-rncv-sectores.html' -e 'd}' --e '/\<tablervcv\>/{r interactive-maps/table-rvcv-sectores.html' -e 'd}' --e '/\<tablervsv\>/{r interactive-maps/table-rvsv-sectores.html' -e 'd}' --e '/\<tableviol\>/{r interactive-maps/table-viol-sectores.html' -e 'd}' --e '/\<vecSector\>/{r interactive-maps/vecSector.txt' -e 'd}' interactive-maps/index.html > html/index.html
+
 
 $(R): input.in.intermediate2
 .INTERMEDIATE: input.in.intermediate2

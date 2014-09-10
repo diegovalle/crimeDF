@@ -24,14 +24,14 @@ crime.cuadrante <- ddply(mcrime,
                  total = sum(count),
                  population = population[1],
                  sector = sector[1],
-                 rate = (sum(count, na.rm = TRUE)/ sum(population, na.rm = TRUE)) * 10 ^ 5*(12/15))
+                 rate = (sum(count, na.rm = TRUE)/ sum(population, na.rm = TRUE)) * 10 ^ 5)
 crime.cuadrante <- crime.cuadrante[order(-crime.cuadrante$rate),]
 
 crime.sector <- ddply(crime.cuadrante, 
                       .(crime, sector), summarise,
                       total = sum(total),
                       pop = sum(population, na.rm = TRUE),
-                      rate = (sum(total, na.rm = TRUE)/ sum(pop, na.rm = TRUE)) * 10 ^ 5*(12/15))
+                      rate = (sum(total, na.rm = TRUE)/ sum(pop, na.rm = TRUE)) * 10 ^ 5)
 crime.sector <- crime.sector[order(-crime.sector$rate),]
 
 names(crime.cuadrante) <- c("crime", "id", "total", "population", "sector", "rate")
@@ -46,7 +46,7 @@ totals.cuad <- ddply(mcrime, .(crime, cuadrante), summarise,
 ddply(totals.cuad, .(crime), summarise,
       count = sum(count),
       population = sum(population, na.rm = TRUE),
-      rate = (sum(count, na.rm = TRUE)/ sum(population, na.rm = TRUE)) * 10 ^ 5*(12/15))
+      rate = (sum(count, na.rm = TRUE)/ sum(population, na.rm = TRUE)) * 10 ^ 5)
 
 cuadrantes.map <- plyr::join(fcuadrantes, subset(crime.cuadrante, 
                                                  crime == "Robo de vehiculo automotor C/V"))

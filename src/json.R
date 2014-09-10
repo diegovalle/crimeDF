@@ -3,6 +3,11 @@ topoRateNames <- c("id", "population", "hom_rate", "rncv_rate", "rvcv_rate", "rv
 topoCountNames <- c("id", "population", "hom_count", "rncv_count", "rvcv_count", "rvsv_count", "viol_count")
 
 topoSectorNames <- c("sector", "hom", "rncv", "rvcv", "rvsv", "viol")
+topoDiffNames <- c("id",  "hom_current", "hom_last", 
+                   "rncv_current", "rncv_last", 
+                   "rvcv_current", "rvcv_last", 
+                   "rvsv_current", "rvsv_last", 
+                   "viol_current", "viol_last")
 interactiveRateNames <- c("sector", "population", "hom_rate", "rncv_rate", 
                           "rvcv_rate", "rvsv_rate", "viol_rate")
 interactiveCountNames <- c("sector", "population", "hom_count", "rncv_count", 
@@ -47,17 +52,61 @@ date.total <- ddply(mcrime, .(crime, date), summarise,
                     count = sum(count))
 date.total$date <- as.Date(date.total$date)
 total <- cast(date.total, date ~ crime, value = "count")
-toJSON(total[,-1], dataframe = "column")
+names(total) <- c("date", "HomicidesA", "rncvA", "rvcvA", "rvsvA", "violA")
+txt <- toJSON(total[,-1], dataframe = "column")
+txt <- toJSON(total[,-1], dataframe = "column")
+txt <- str_replace_all(txt, '"|\\{|\\}', "")
+txt <- str_replace_all(txt, ':', "=")
+txt <- str_replace_all(txt, ' $', ";")
+txt <- str_replace_all(txt, 'HomicidesA = \\[', "HomicidesA = \\['Homicides',")
+txt <- str_replace_all(txt, 'rncvA = \\[', "rncvA = \\['Violent robberies to a business',")
+txt <- str_replace_all(txt, 'rvcvA = \\[', "rvcvA = \\['Violent car robberies',")
+txt <- str_replace_all(txt, 'rvsvA = \\[', "rvsvA = \\['Non-violent car robberies',")
+txt <- str_replace_all(txt, 'violA = \\[', "violA = \\['Rape',")
+write(txt, file=file.path("interactive-maps", "vecCuadrantes.txt"))
 
 
 #for merging with cuadrante topojson
-topo <- ddply(mcrime, .(crime, cuadrante), summarise,
+topo <- ddply(subset(mcrime, date >= as.Date(yearAgo)), .(crime, cuadrante), summarise,
               count = sum(count))
 topo <- cast(topo, cuadrante ~ crime, value = "count")
 names(topo) <- topoNames
 topo <- subset(topo, id != "(en blanco)")
 apply(topo[,-1], 2, function(x) range(x))
 write.csv(topo, "data/topo-cuadrantes.csv", row.names = FALSE)
+
+#for merging with cuadrante topojson for the difference map
+mcrime2 <- mcrime
+mcrime2$when <- NA
+mcrime2$when[mcrime2$date %in% as.yearmon(lastyearMonths)] <- "last"
+mcrime2$when[mcrime2$date %in% as.yearmon(thisyearMonths)] <- "current"
+mcrime2 <- subset(mcrime2, !is.na(mcrime2$when))
+topo <- ddply(subset(mcrime2, date %in% as.yearmon(c(lastyearMonths, thisyearMonths))), 
+              .(crime, cuadrante, when), summarise,
+              count = sum(count))
+topo <- cast(topo, cuadrante ~ crime + when, value = "count")
+names(topo) <- topoDiffNames
+topo$hom <- topo$hom_current - topo$hom_last
+topo$rncv <- topo$rncv_current - topo$rncv_last
+topo$rvcv <- topo$rvcv_current - topo$rvcv_last
+topo$rvsv <- topo$rvsv_current - topo$rvsv_last
+topo$viol <- topo$viol_current - topo$viol_last
+
+names(topo)[1] <-  "id"
+cuadrantes.map <- plyr::join(fcuadrantes, topo )
+ggplot(cuadrantes.map, aes(long, lat, group = group, fill = Homicidio_doloso_diff), color = "gray") +
+  geom_polygon() +
+  coord_map()+
+  ggtitle("Robo de vehiculo automotor C/V") +
+  scale_fill_gradient2(low = "#4575b4",
+                       mid = "#ffffbf",
+                        high = "#d73027", space = "Lab", na.value = "grey50",
+                        guide = "colourbar")
+
+#names(topo) <- topoNames
+topo <- subset(topo, id != "(en blanco)")
+#apply(topo[,-1], 2, function(x) range(x))
+write.csv(topo, "data/topo-cuadrantes-diff.csv", row.names = FALSE)
 
 #for merging with the leaflet topojson
 topo <- ddply(subset(mcrime, date >= yearAgo),
@@ -77,6 +126,8 @@ write.csv(topo, "data/interactive-cuadrantes.csv", row.names = FALSE)
 
 
 
+
+
 js <- list(hom=formatCuadranteForJSON(mcrime, "Homicidio doloso"),
            rncv=formatCuadranteForJSON(mcrime, "Robo a negocio C/V"),
            rvcv=formatCuadranteForJSON(mcrime, "Robo de vehiculo automotor C/V"),
@@ -93,7 +144,17 @@ date.total <- ddply(mcrime, .(crime, date), summarise,
                     rate = (sum(count) / sum(population, na.rm = TRUE)) * 10^5 * 12)
 date.total$date <- as.Date(date.total$date)
 total <- cast(date.total, date ~ crime, value = "rate")
-toJSON(total[,-1], dataframe = "column")
+names(total) <- c("date", "HomicidesA", "rncvA", "rvcvA", "rvsvA", "violA")
+txt <- toJSON(total[,-1], dataframe = "column")
+txt <- str_replace_all(txt, '"|\\{|\\}', "")
+txt <- str_replace_all(txt, ':', "=")
+txt <- str_replace_all(txt, ' $', ";")
+txt <- str_replace_all(txt, 'HomicidesA = \\[', "HomicidesA = \\['Homicide rate',")
+txt <- str_replace_all(txt, 'rncvA = \\[', "rncvA = \\['Violent robbery to a business rate',")
+txt <- str_replace_all(txt, 'rvcvA = \\[', "rvcvA = \\['Violent car robbery rate',")
+txt <- str_replace_all(txt, 'rvsvA = \\[', "rvsvA = \\['Non-violent car robbery rate',")
+txt <- str_replace_all(txt, 'violA = \\[', "violA = \\['Rape rate',")
+write(txt, file=file.path("interactive-maps", "vecSector.txt"))
 
 ##########33
 #Sector data
@@ -144,3 +205,25 @@ interactive.map <- na.omit(interactive.map)
 apply(interactive.map[,-1], 2, function(x) range(x))
 write.csv(interactive.map, "data/interactive-sectores.csv", row.names = FALSE)
 
+
+## Total for when the map is first displayed
+tot <- ddply(subset(mcrime, date >= yearAgo),
+             .(crime), summarise,
+             count = sum(count),
+             population = sum(population, na.rm = TRUE) / 12,
+             rate = round((sum(count, na.rm = TRUE) / 
+                             sum(population, na.rm = TRUE)) * 10 ^ 5, 1))
+
+
+write(str_c('homTotal = ', tot$count[1], ',',
+      'rncvTotal = ', tot$count[2], ',',
+      'rvcvTotal = ', tot$count[3], ',',
+      'rvsvTotal = ', tot$count[4], ',',
+      'violTotal = ', tot$count[5], ',',
+      'homTotalRate = ', tot$rate[1], ',',
+      'rncvTotalRate = ', tot$rate[2], ',',
+      'rvcvTotalRate = ', tot$rate[3], ',',
+      'rvsvTotalRate = ', tot$rate[4], ',',
+      'violTotalRate = ', tot$rate[5], ';'
+), "interactive-maps/totals.js")
+      
