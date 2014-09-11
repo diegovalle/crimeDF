@@ -63,14 +63,10 @@ top10cuads <- top10cuads[, c("rank", "crime", "cuadrante", "sector", "population
 ddply(top10cuads, .(crime), function(df) {
   dir <- 'interactive-maps'
   out_table_x <- xtable(prettyNum(subset(df, rank<=df$rank[10]), big.mark = ","), 
-                        digits = c(0,0,0,0,0,0,0), 
+                        #digits = c(0,0,3,0,0,0,0), 
                         caption = "Top quadrants with the highest number of crimes")
   print(out_table_x, type='html', include.rownames=FALSE,
         file=file.path(dir, str_c(chooseName(df$crime[1]), "-cuadrantes.html")))
-  #   p <- openPage(str_c(str_sub(df$crime[1], 1, 16),".html"), dir = dir)
-  #   hwrite(df[1:10,], p,
-  #          row.names=FALSE)
-  #   closePage(p)
 })
 
 

@@ -199,15 +199,19 @@ createLegend=function(selection, colorFun){
 d3.json(mapFile, function(error, df) {      
     d3.json(crimeFile, function(data) {
         findRange=function(name) {
-            return(d3.extent(d3.entries(df.objects[topoName].geometries), function(d){return(+d.value.properties[name])} ));
+            var ext = d3.extent(d3.entries(df.objects[topoName].geometries), function(d){return(+d.value.properties[name])} );
+            if(ext[0] < 0)
+              return([ext[0], 0, ext[1]]);
+            else
+              return(ext);
         }
 
         crimeData=data
-        quantizeRed = createQuantized(findRange('hom'), "Redsq")
-        quantizeBlue = createQuantized(findRange('rncv'), "Bluesq")
-        quantizePurple = createQuantized(findRange('rvcv'), "Purplesq")
-        quantizeGreen = createQuantized(findRange('rvsv'), "Greensq")
-        quantizeGray = createQuantized(findRange('viol'), "Graysq")
+        quantizeRed = createQuantized(findRange('hom'), mapColors.hom)
+        quantizeBlue = createQuantized(findRange('rncv'), mapColors.rncv)
+        quantizePurple = createQuantized(findRange('rvcv'), mapColors.rvcv)
+        quantizeGreen = createQuantized(findRange('rvsv'), mapColors.rvsv)
+        quantizeGray = createQuantized(findRange('viol'), mapColors.viol)
         createMap(df, svgHomicide, 'Homicides','hom', quantizeRed, '#homicide-title', chartHomicides, topoName, tipHom, HomicidesA[0]);
         createMap(df, svgRNCV, 'Violent robberies to a business', 'rncv', quantizeBlue, '#rncv-title', chartrncv, topoName, tipRNCV, rncvA[0]);
         createMap(df, svgRVCV, 'Violent car robberies', 'rvcv', quantizePurple, '#rvcv-title', chartrvcv, topoName, tipRVCV, rvcvA[0]);

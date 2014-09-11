@@ -10,8 +10,15 @@
     <!--[if lte IE 8]>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.ie.css" />
     <![endif]-->
+<link rel="stylesheet" href="css/L.Control.Locate.css" />
+<!--[if lt IE 9]>
+    <link rel="stylesheet" href="css/L.Control.Locate.ie.css"/>
+<![endif]-->
+
 
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script src="js/L.Control.Locate.js" ></script>
+<script src="js/leaflet-hash.js" ></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="js/topojson.v1.min.js"></script>
     <script src="js/l.control.geosearch.js"></script>
@@ -471,6 +478,9 @@ $.getJSON('js/{{level}}-map.json', function (data) {
     document.getElementById("seltarget").onmouseover = controlEnter;
     document.getElementById("seltarget").onmouseout = controlLeave; 
     L.control.layers(null,baseMaps, {position: 'topleft'}).addTo(map);
+    L.control.locate({drawCircle: false, 
+                     locateOptions: {enableHighAccuracy: true }}).addTo(map);
+    var hash = new L.Hash(map);
 });
 
 

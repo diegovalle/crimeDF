@@ -67,7 +67,8 @@ write(txt, file=file.path("interactive-maps", "vecCuadrantes.txt"))
 
 
 #for merging with cuadrante topojson
-topo <- ddply(subset(mcrime, date >= as.Date(yearAgo)), .(crime, cuadrante), summarise,
+topo <- ddply(subset(mcrime, as.Date(as.yearmon(date)) >= as.Date(yearAgo)), 
+              .(crime, cuadrante), summarise,
               count = sum(count))
 topo <- cast(topo, cuadrante ~ crime, value = "count")
 names(topo) <- topoNames
@@ -91,20 +92,53 @@ topo$rncv <- topo$rncv_current - topo$rncv_last
 topo$rvcv <- topo$rvcv_current - topo$rvcv_last
 topo$rvsv <- topo$rvsv_current - topo$rvsv_last
 topo$viol <- topo$viol_current - topo$viol_last
+topo <- subset(topo, id != "(en blanco)")
+
 
 names(topo)[1] <-  "id"
 cuadrantes.map <- plyr::join(fcuadrantes, topo )
-ggplot(cuadrantes.map, aes(long, lat, group = group, fill = Homicidio_doloso_diff), color = "gray") +
+ggplot(cuadrantes.map, aes(long, lat, group = group, fill = hom), color = "gray") +
   geom_polygon() +
   coord_map()+
-  ggtitle("Robo de vehiculo automotor C/V") +
+  ggtitle("") +
   scale_fill_gradient2(low = "#4575b4",
                        mid = "#ffffbf",
                         high = "#d73027", space = "Lab", na.value = "grey50",
                         guide = "colourbar")
 
+
+createTable <- function(topo, var, name) {
+  topo$rank <- rank(-topo[[var]])
+  topo <- merge(topo, unique(mcrime[,c("cuadrante", "sector", "population")]), 
+                by.x = "id", by.y = "cuadrante",
+                all.x = TRUE)
+  topo <- topo[order(topo$rank, -topo$sector),]
+  xtab <- xtable(prettyNum(subset(topo[,c("id", "sector", "population", var, 
+                                          str_c(var, "_current"), 
+                                          str_c(var, "_last"), 
+                                          "rank")], 
+                                  rank<=topo$rank[10]), big.mark = ","), 
+                 digits = c(2,0, 0,0,0,0,0,0), 
+                 caption = "Top quadrants with the highest increase in crimes")
+  names(xtab) <- c("quadrant", "sector", "population", "difference", 
+                   str_c(name, " May-Jul 2014"), 
+                   str_c(name, " May-Jul 2013"),
+                   "rank")
+  print(xtab, type='html', include.rownames=FALSE,
+        file=file.path('interactive-maps', 
+                       'tables',
+                       str_c("table-", var, 
+                             "-diff", "-cuadrantes.html")))
+}
+createTable(topo, "hom", "homicides")
+createTable(topo, "rncv", "robbery to a business with violence")
+createTable(topo, "rvcv", "vehicle robbery with violence")
+createTable(topo, "rvsv", "vehicle robbery without violence")
+createTable(topo, "viol", "rape")
+
 #names(topo) <- topoNames
-topo <- subset(topo, id != "(en blanco)")
+topo <- topo[,c(1,12:16)]
+
 #apply(topo[,-1], 2, function(x) range(x))
 write.csv(topo, "data/topo-cuadrantes-diff.csv", row.names = FALSE)
 

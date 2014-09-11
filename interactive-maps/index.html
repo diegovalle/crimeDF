@@ -56,6 +56,31 @@
 <script type="text/javascript">var addthis_config = {"data_track_addressbar":true};</script>
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-53828ddc4d27c103"></script>
 <!-- AddThis Button END -->
+
+<!-- Begin MailChimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/slim-081711.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#D70206; margin:5px 0 5px 0;clear:left; font:14px Helvetica,Arial,sans-serif;border: 3px solid #333; }
+#mc_embed_signup p {font-color:white;font-weight:bold;}
+	/* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+
+<div id="mc_embed_signup">
+<form action="//diegovalle.us6.list-manage.com/subscribe/post?u=787fae824c502d9f3ad7d0b73&amp;id=102491489b" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+	<div class="row">
+          <div class="7u">
+<span>Receive an email when new crime info is available</span>
+	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;"><input type="text" name="b_787fae824c502d9f3ad7d0b73_102491489b" tabindex="-1" value=""></div>
+   <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div></div>
+</form>
+
+</div>
+
+<!--End mc_embed_signup-->
                                           <h2 id="homicide-title" style="text-align:right;margin: 0 7em 0 0;">Homicides - rates</h2>
 
 					  <div class="row">
@@ -256,7 +281,8 @@
 var topoName = 'sectores';
 var mapFile = "js/sectores.json";
 var crimeFile = "js/hom-dol-sector.js";
-
+var mapColors = {hom:"Redsq", rncv:"Bluesq", rvcv:"Purplesq",
+rvsv:"Greensq", viol:"Graysq"}
 <vecSector>
 crimePrefix = 'rate of ';
 document.getElementById("HomicideButton").onclick = function (event) { 
