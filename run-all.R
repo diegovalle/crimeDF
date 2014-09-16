@@ -36,6 +36,7 @@ source(file.path("src", "graphs.R"))
 source(file.path("src", "json.R"))
 
 
+
 chooseName <- function(name) {
   if(name == "Homicidio doloso")
     return("table-hom")
@@ -61,9 +62,10 @@ top10cuads <- ddply(top10cuads, .(crime), transform, rank =  rank(-count))
 top10cuads <- top10cuads[, c("rank", "crime", "cuadrante", "sector", "population", "count")]
 
 ddply(top10cuads, .(crime), function(df) {
-  dir <- 'interactive-maps'
-  out_table_x <- xtable(prettyNum(subset(df, rank<=df$rank[10]), big.mark = ","), 
-                        #digits = c(0,0,3,0,0,0,0), 
+  dir <- 'interactive-maps/tables'
+  df$population <- prettyNum(df$population, big.mark = ",")
+  out_table_x <- xtable(subset(df, rank<=df$rank[10]),
+                        digits = c(0,0,3,0,0,0,0), 
                         caption = "Top quadrants with the highest number of crimes")
   print(out_table_x, type='html', include.rownames=FALSE,
         file=file.path(dir, str_c(chooseName(df$crime[1]), "-cuadrantes.html")))
@@ -85,11 +87,27 @@ top10sectors <- ddply(top10sectors, .(crime), transform, rank =  rank(-rate))
 top10sectors <- top10sectors[,c("rank", "crime", "sector", "count", "population", "rate")]
 
 ddply(top10sectors, .(crime), function(df) {
-  dir <- 'interactive-maps'
-  out_table_x <- xtable(prettyNum(subset(df, rank<=df$rank[10]), big.mark = ","), 
+  dir <- 'interactive-maps/tables'
+  df$population <- prettyNum(df$population, big.mark = ",")
+  out_table_x <- xtable(subset(df, rank<=df$rank[10]), 
                                   digits = c(0,0,0,0,0,0,1),
                         caption = "Top sectors with the highest rates of crime")
   print(out_table_x, type='html', include.rownames=FALSE,
         file=file.path(dir, str_c(chooseName(df$crime[1]), "-sectores.html")))
 })
 
+
+mcrime$date <- as.Date(mcrime$date)
+write.csv( mcrime, "clean-data/cuadrantes.csv",
+           row.names = FALSE)
+
+
+
+write.csv(ddply(mcrime, 
+                .(crime, date, sector), summarise,
+                count = sum(count),
+                population = sum(population, na.rm = TRUE),
+                rate = (count / population) * 10^5 * 12,
+                cuadrante = cuadrante[1]),
+          "clean-data/sectores.csv",
+          row.names = FALSE)

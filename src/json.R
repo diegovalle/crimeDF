@@ -63,7 +63,7 @@ txt <- str_replace_all(txt, 'rncvA = \\[', "rncvA = \\['Violent robberies to a b
 txt <- str_replace_all(txt, 'rvcvA = \\[', "rvcvA = \\['Violent car robberies',")
 txt <- str_replace_all(txt, 'rvsvA = \\[', "rvsvA = \\['Non-violent car robberies',")
 txt <- str_replace_all(txt, 'violA = \\[', "violA = \\['Rape',")
-write(txt, file=file.path("interactive-maps", "vecCuadrantes.txt"))
+write(txt, file=file.path("interactive-maps","tables", "vecCuadrantes.txt"))
 
 
 #for merging with cuadrante topojson
@@ -112,18 +112,19 @@ createTable <- function(topo, var, name) {
   topo <- merge(topo, unique(mcrime[,c("cuadrante", "sector", "population")]), 
                 by.x = "id", by.y = "cuadrante",
                 all.x = TRUE)
-  topo <- topo[order(topo$rank, -topo$sector),]
-  xtab <- xtable(prettyNum(subset(topo[,c("id", "sector", "population", var, 
+  topo <- topo[order(topo$rank),]
+  topo$population <- prettyNum(topo$population, big.mark = ",")
+  xtab <- xtable(prettyNum(subset(topo[,c("rank", "id", "sector", "population",  
                                           str_c(var, "_current"), 
                                           str_c(var, "_last"), 
-                                          "rank")], 
-                                  rank<=topo$rank[10]), big.mark = ","), 
+                                          var)], 
+                                  rank<=topo$rank[10])), 
                  digits = c(2,0, 0,0,0,0,0,0), 
-                 caption = "Top quadrants with the highest increase in crimes")
-  names(xtab) <- c("quadrant", "sector", "population", "difference", 
+                 caption = "Top quadrants with the highest increases in crimes")
+  names(xtab) <- c("rank", "quadrant", "sector", "population", 
                    str_c(name, " May-Jul 2014"), 
                    str_c(name, " May-Jul 2013"),
-                   "rank")
+                   "difference")
   print(xtab, type='html', include.rownames=FALSE,
         file=file.path('interactive-maps', 
                        'tables',
@@ -168,7 +169,7 @@ js <- list(hom=formatCuadranteForJSON(mcrime, "Homicidio doloso"),
            rvsv=formatCuadranteForJSON(mcrime, "Robo de vehiculo automotor S/V"),
            viol=formatCuadranteForJSON(mcrime, "Violacion"))
 js <- toJSON(js, dataframe = "column")
-fh <- file("html/js/hom-dol-cuad.js", "w")
+fh <- file("html/js/hom-dol-cuad.json", "w")
 writeLines(js, fh)
 close(fh)
 
@@ -188,7 +189,7 @@ txt <- str_replace_all(txt, 'rncvA = \\[', "rncvA = \\['Violent robbery to a bus
 txt <- str_replace_all(txt, 'rvcvA = \\[', "rvcvA = \\['Violent car robbery rate',")
 txt <- str_replace_all(txt, 'rvsvA = \\[', "rvsvA = \\['Non-violent car robbery rate',")
 txt <- str_replace_all(txt, 'violA = \\[', "violA = \\['Rape rate',")
-write(txt, file=file.path("interactive-maps", "vecSector.txt"))
+write(txt, file=file.path("interactive-maps","tables", "vecSector.txt"))
 
 ##########33
 #Sector data
@@ -200,7 +201,7 @@ js <- list(hom=formatSectorForJSON(mcrime, "Homicidio doloso"),
            rvsv=formatSectorForJSON(mcrime, "Robo de vehiculo automotor S/V"),
            viol=formatSectorForJSON(mcrime, "Violacion"))
 js <- toJSON(js, dataframe = "column")
-fh <- file("html/js/hom-dol-sector.js", "w")
+fh <- file("html/js/hom-dol-sector.json", "w")
 writeLines(js, fh)
 close(fh)
 

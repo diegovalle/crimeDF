@@ -11,11 +11,7 @@
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
 		<meta name="viewport" content="width=1040" />
-		<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600|Arvo:700" rel="stylesheet" type="text/css" />
-		<!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
-                <!-- Load c3.css -->
-                <link href="css/c3.css" rel="stylesheet" type="text/css">
-                <link href="css/crime.css" rel="stylesheet" type="text/css">
+		
 		<script src="js/jquery.min.js"></script>
 		<script src="js/jquery.dropotron.min.js"></script>
 		<script src="js/config.js"></script>
@@ -31,7 +27,11 @@
                 <script src="js/underscore-min.js" type="text/javascript"></script>
 
                 
-
+<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600|Arvo:700" rel="stylesheet" type="text/css" />
+		<!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
+                <!-- Load c3.css -->
+                <link href="css/c3.css" rel="stylesheet" type="text/css">
+                <link href="css/crime.css" rel="stylesheet" type="text/css">
 		<noscript>
 			<link rel="stylesheet" href="css/skel-noscript.css" />
 			<link rel="stylesheet" href="css/style.css" />
@@ -57,25 +57,24 @@
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-53828ddc4d27c103"></script>
 <!-- AddThis Button END -->
 
+
+
 <!-- Begin MailChimp Signup Form -->
-<link href="//cdn-images.mailchimp.com/embedcode/slim-081711.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-	#mc_embed_signup{background:#D70206; margin:5px 0 5px 0;clear:left; font:14px Helvetica,Arial,sans-serif;border: 3px solid #333; }
-#mc_embed_signup p {font-color:white;font-weight:bold;}
-	/* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
-	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
-</style>
+
+
 
 <div id="mc_embed_signup">
 <form action="//diegovalle.us6.list-manage.com/subscribe/post?u=787fae824c502d9f3ad7d0b73&amp;id=102491489b" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-	<div class="row">
-          <div class="7u">
-<span>Receive an email when new crime info is available</span>
-	<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+	<div class="center">
+          <div>
+            <span style="color:white;font-weight:bold;">Free email when new crime info is available</span>
+	<input type="email" value=" " size="30" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
 
     <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
     <div style="position: absolute; left: -5000px;"><input type="text" name="b_787fae824c502d9f3ad7d0b73_102491489b" tabindex="-1" value=""></div>
-   <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div></div>
+   <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button" style="background:green;color:white;padding: .7em 2em;font-size: .9em;padding-bottom: 6px;">
+<span style="color:white;font-weight:bold;">(No spam)</span>
+</div></div>
 </form>
 
 </div>
@@ -97,9 +96,10 @@
                                               <a href="#" class="button" id="HomicideButton">Reset Chart to show all DF data</a>
                                             </div>
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
+<div class="table-responsive" style="box-sizing: border-box;">
 <tablehom>
 </div>
 </div>
@@ -118,8 +118,8 @@
                                               <a href="#" class="button" id="RNCVButton">Reset Chart to show all DF data</a>
                                             </div>
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+<div class="table-responsive" style="box-sizing: border-box;">
 <div class="datagrid">
 <tablerncv>
 </div>
@@ -139,12 +139,12 @@
                                               <a href="#" class="button" id="RVCVButton">Reset Chart to show all DF data</a>
                                             </div>
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
 <tablervcv>
 </div>
-</div>
+
 </div>
 <hr/>
                                           <h2 id="rvsv-title" style="text-align:right;margin: 0 7em 0 0;">Non-violent car robberies - rates</h2> <!--  -->
@@ -160,11 +160,10 @@
                                               <a href="#" class="button" id="RVSVButton">Reset Chart to show all DF data</a>
                                             </div>
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
 <tablervsv>
-</div>
 </div>
 </div>
 <hr/>
@@ -185,11 +184,10 @@
                                             </div>
                                           
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
 <tableviol>
-</div>
 </div>
 </div>
                  
@@ -200,8 +198,8 @@
 						<!-- Nav -->
 							<nav id="nav">
 								<ul>
-									<li><a class="fa fa-home" href="//www.diegovalle.net/maps/cuadrantes-delictivos/"><span>Rates (Sectors)</span></a></li>
-                                                                        <li><a class="fa fa-bar-chart-o" href="counts.html"><span>Counts (Quadrants)</span></a></li>
+									<li><a class="fa fa-home" href="//www.diegovalle.net/maps/cuadrantes-delictivos/"><span>Sectors</span></a></li>
+                                                                        <li><a class="fa fa-bar-chart-o" href="counts.html"><span>Quadrants</span></a></li>
 									<li>
 										
 										<a href="#" class="fa fa-map-marker"><span>Interactive Maps</span></a>
@@ -213,7 +211,9 @@
 										</ul>
                                                                                 
 									</li>
-                                                                        <li><a class="fa fa-signal" href="other.html">Charts</span></a></li>
+                                                                        <li><a class="fa fa-signal" href="other.html"><span>Charts</span></a></li>
+<li><a class="fa fa-signal" href="change.html"><span>Trends</span></a></li>
+<li><a class="fa fa-signal" href="change.html"><span>About</span></a></li>
 								</ul>
 							</nav>
 
@@ -274,8 +274,6 @@
 
 			</div>
 <script type="x-jst" id="tooltip-template">
-<h5>Cats</h5>
-<p> have a BA degree or higher.</p>
 </script>
 <script>
 var topoName = 'sectores';

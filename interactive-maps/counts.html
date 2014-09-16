@@ -70,12 +70,12 @@
                                             </div>
                                           
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
 <tablehom>
 </div>
-</div>
+
 </div>
                                           <hr/>
                                           <h2 id="rncv-title">VIOLENT ROBBERIES TO A BUSINESS - Total</h2>
@@ -92,12 +92,12 @@
                                               </div>
                                             </div>
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
 <tablerncv>
 </div>
-</div>
+
 </div>
                                           <hr/>
                                           <h2 id="rvcv-title">VIOLENT CAR ROBBERIES- Total</h2>
@@ -114,12 +114,12 @@
                                               </div>
                                             </div>
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
 <tablervcv>
 </div>
-</div>
+
 </div>
                                           <hr/>
                                           <h2 id="rvsv-title">NON-VIOLENT CAR ROBBERIES - Total</h2>
@@ -136,12 +136,12 @@
                                               </div>
                                             </div>
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
 <tablervsv>
 </div>
-</div>
+
 </div>
                                           <hr/>
                                           <h2 id="rvsv-title">Rape - Total</h2>
@@ -158,12 +158,12 @@
                                               </div>
                                             </div>
                                           </div>
-<div class="row">
-<div class="7u">
+<div>
+
 <div class="datagrid">
 <tableviol>
 </div>
-</div>
+
 </div>
                                           
 						<!-- Logo -->
@@ -278,7 +278,7 @@ chartrvcv.load({
                 columns: [rvcvA],
             }); };
 
-document.getElementById("RVSVButton").onclick = function () { 
+document.getElementById("RVSVButton").onclick = function (event) { 
 event.preventDefault(); 
 d3.select('#rvsv-title').text('Non-violent car robberies - DF Total');
 chartrvsv.load({

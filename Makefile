@@ -13,7 +13,8 @@ HTML = html/cuadrantes.html html/sectores.html
 all: $(JSON) cuadrante-shps/cuadrantes-sspdf.shp html/js/cuadrantes.json \
      html/js/sectores.json html/js/sectores-map.json \
      html/js/cuadrantes-map.json html/js/cuadrantes-diff.json $(R) \
-     node_modules/.bin/hulk html/counts.html html/index.html $(HTML)
+     node_modules/.bin/hulk html/counts.html html/index.html $(HTML) \
+     html/change.html
 
 clean:
 	rm -rf $(JSON) html/js/sectores.json html/js/cuadrantes.json cuadrante-shps/cuadrantes-sspdf.shp $(R) $(HTML)
@@ -95,10 +96,13 @@ html/js/sectores.json: cuadrante-shps/sectores.shp
 	sectores=$^
 
 html/counts.html: interactive-maps/counts.html
-	sed --e '/\<tablehom\>/{r interactive-maps/table-hom-cuadrantes.html' -e 'd}' --e '/\<tablerncv\>/{r interactive-maps/table-rncv-cuadrantes.html' -e 'd}' --e '/\<tablervcv\>/{r interactive-maps/table-rvcv-cuadrantes.html' -e 'd}' --e '/\<tablervsv\>/{r interactive-maps/table-rvsv-cuadrantes.html' -e 'd}' --e '/\<tableviol\>/{r interactive-maps/table-viol-cuadrantes.html' -e 'd}' --e '/\<vecCuadrantes\>/{r interactive-maps/vecCuadrantes.txt' -e 'd}'  interactive-maps/counts.html > html/counts.html
+	sed --e '/\<tablehom\>/{r interactive-maps/tables/table-hom-cuadrantes.html' -e 'd}' --e '/\<tablerncv\>/{r interactive-maps/tables/table-rncv-cuadrantes.html' -e 'd}' --e '/\<tablervcv\>/{r interactive-maps/tables/table-rvcv-cuadrantes.html' -e 'd}' --e '/\<tablervsv\>/{r interactive-maps/tables/table-rvsv-cuadrantes.html' -e 'd}' --e '/\<tableviol\>/{r interactive-maps/tables/table-viol-cuadrantes.html' -e 'd}' --e '/\<vecCuadrantes\>/{r interactive-maps/tables/vecCuadrantes.txt' -e 'd}'  interactive-maps/counts.html > html/counts.html
+
+html/change.html: interactive-maps/change.html
+	sed --e '/\<tablehom\>/{r interactive-maps/tables/table-hom-diff-cuadrantes.html' -e 'd}' --e '/\<tablerncv\>/{r interactive-maps/tables/table-rncv-diff-cuadrantes.html' -e 'd}' --e '/\<tablervcv\>/{r interactive-maps/tables/table-rvcv-diff-cuadrantes.html' -e 'd}' --e '/\<tablervsv\>/{r interactive-maps/tables/table-rvsv-diff-cuadrantes.html' -e 'd}' --e '/\<tableviol\>/{r interactive-maps/tables/table-viol-diff-cuadrantes.html' -e 'd}' --e '/\<vecCuadrantes\>/{r interactive-maps/tables/vecCuadrantes.txt' -e 'd}'  interactive-maps/change.html > html/change.html
 
 html/index.html: interactive-maps/index.html
-	sed --e '/\<tablehom\>/{r interactive-maps/table-hom-sectores.html' -e 'd}' --e '/\<tablerncv\>/{r interactive-maps/table-rncv-sectores.html' -e 'd}' --e '/\<tablervcv\>/{r interactive-maps/table-rvcv-sectores.html' -e 'd}' --e '/\<tablervsv\>/{r interactive-maps/table-rvsv-sectores.html' -e 'd}' --e '/\<tableviol\>/{r interactive-maps/table-viol-sectores.html' -e 'd}' --e '/\<vecSector\>/{r interactive-maps/vecSector.txt' -e 'd}' interactive-maps/index.html > html/index.html
+	sed --e '/\<tablehom\>/{r interactive-maps/tables/table-hom-sectores.html' -e 'd}' --e '/\<tablerncv\>/{r interactive-maps/tables/table-rncv-sectores.html' -e 'd}' --e '/\<tablervcv\>/{r interactive-maps/tables/table-rvcv-sectores.html' -e 'd}' --e '/\<tablervsv\>/{r interactive-maps/tables/table-rvsv-sectores.html' -e 'd}' --e '/\<tableviol\>/{r interactive-maps/tables/table-viol-sectores.html' -e 'd}' --e '/\<vecSector\>/{r interactive-maps/tables/vecSector.txt' -e 'd}' interactive-maps/index.html > html/index.html
 
 
 $(R): input.in.intermediate2
