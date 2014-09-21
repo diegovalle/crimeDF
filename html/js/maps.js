@@ -129,6 +129,10 @@ function createLineChart(selection, totalCrime, labelText, color) {
         },
         bindto: selection,
         point: { show: false },
+        regions: [
+            {start:"2013-05-15", end:"2013-07-15"},
+            {start:"2014-05-15", end:"2014-07-15", class:'foo'}
+        ],
         data: {
             x: 'x',
             columns: [
@@ -165,7 +169,10 @@ function createLineChart(selection, totalCrime, labelText, color) {
         },
         tooltip: {
             format: {
-                title: function (d) { d; },
+                title: function (d) { 
+var format = d3.time.format("%Y-%B");
+return format(d); 
+},
                 value: function (value, ratio, id) {
                     var format = d3.format('');
                     return format(value);
