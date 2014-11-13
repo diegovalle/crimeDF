@@ -145,6 +145,15 @@ ggsave(file.path("graphs", "total-sector-rvsv.png"), dpi = 100, width = 10, heig
 plotSectorRates(date.sectores, "Rape", "Violacion")
 ggsave(file.path("graphs", "total-sector-viol.png"), dpi = 100, width = 10, height = 7)
 
+plotSectorRates(date.sectores, "Robbery to a pedestrian with violence", "Robo a transeunte C.V.")
+ggsave(file.path("graphs", "total-sector-rtcv.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates(date.sectores, "Robbery to a pedestrian without violence", "Robo a transeunte S.V.")
+ggsave(file.path("graphs", "total-sector-rtsv.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates(date.sectores, "Home invasion", "Robo a casa habitacion C.V.")
+ggsave(file.path("graphs", "total-sector-rccv.png"), dpi = 100, width = 10, height = 7)
+
 # Espanol
 
 plotSectorRates_es(date.sectores, "Homicidio doloso", "Homicidio doloso")
@@ -161,4 +170,13 @@ ggsave(file.path("graphs", "total-sector-rvsv_es.png"), dpi = 100, width = 10, h
 
 plotSectorRates_es(date.sectores, "Violacion", "Violacion")
 ggsave(file.path("graphs", "total-sector-viol_es.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates_es(date.sectores, "Robo a transeunte C.V.", "Robo a transeunte C.V.")
+ggsave(file.path("graphs", "total-sector-rtcv_es.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates_es(date.sectores, "Robo a transeunte S.V.", "Robo a transeunte S.V.")
+ggsave(file.path("graphs", "total-sector-rtsv_es.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates_es(date.sectores, "Robo a casa habitacion C.V.", "Robo a casa habitacion C.V.")
+ggsave(file.path("graphs", "total-sector-rccv_es.png"), dpi = 100, width = 10, height = 7)
 
