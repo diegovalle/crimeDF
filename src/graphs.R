@@ -4,11 +4,16 @@
 ## the data for Apr 2014 is incomplete!
 date.total <- ddply(mcrime, .(crime, date), summarise,
                        count = sum(count))
-ggplot(subset(date.total, crime == "Homicidio doloso"), 
+ggplot(date.total, 
        aes(as.Date(date), count)) +
-  geom_line()
+  geom_line() +
+  facet_wrap(~crime)
 ggsave(file.path("graphs", "incomplete.png"), dpi = 100, width = 6, height = 4)
-mcrime <- subset(mcrime, !date %in% as.yearmon(badMonths))
+#mcrime <- subset(mcrime, !date %in% as.yearmon(badMonths))
+
+ddply(mcrime, .(crime), summarise,
+                    count = length(count))
+
 
 ## How many cuadrantes belong to an undefined Sector?
 unique(mcrime$cuadrante[is.na(mcrime$sector)])
@@ -49,7 +54,7 @@ ddply(totals.cuad, .(crime), summarise,
       rate = (sum(count, na.rm = TRUE)/ sum(population, na.rm = TRUE)) * 10 ^ 5)
 
 cuadrantes.map <- plyr::join(fcuadrantes, subset(crime.cuadrante, 
-                                                 crime == "Robo de vehiculo automotor C/V"))
+                                                 crime == "Robo de vehiculo automotor C.V."))
 cuadrantes.map$rate2 <- cuadrantes.map$rate
 cuadrantes.map$rate2[log(cuadrantes.map$rate) > 6.5 ] <- exp(6.5)
 ggplot(cuadrantes.map, aes(long, lat, group = group, fill = total), color = "gray") +
@@ -63,7 +68,7 @@ ggsave(file.path("graphs", "map-cuadrante-total.png"), dpi = 100, width = 7, hei
 
 names(crime.sector)[2] <- "id"
 sector.map <- plyr::join(fsector, subset(crime.sector, 
-                                         crime == "Robo de vehiculo automotor C/V"))
+                                         crime == "Robo de vehiculo automotor C.V."))
 
 ggplot(sector.map, aes(long, lat, group = group, fill = rate), color = "gray") +
   geom_polygon() +
@@ -101,25 +106,59 @@ plotSectorRates <- function(df, crime, sub) {
     #geom_smooth(method="loess", se = FALSE)  +
     #scale_y_continuous(limits = c(0, 140), breaks = c(0, 100)) +
     theme(strip.text.x = element_text(size = 6)) +
-    ggtitle(str_c(crime, " rates in the DF, by sector (", min(df$date), " - ",
-                  max(df$date), ")")) +
+    ggtitle(str_c(crime, " rates in the DF, by sector (", as.yearmon(min(df$date)), " - ",
+                                                                     as.yearmon(max(df$date)), ")")) +
     xlab("date") +
     ylab("rate") +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+}
+
+plotSectorRates_es <- function(df, crime, sub) {
+  df <- subset(na.omit(df), crime == sub)
+  df$sector <- with(df, reorder(sector, -rate, mean))
+  ggplot(df, 
+         aes(as.Date(date), rate, group = sector)) +
+    geom_line() +
+    facet_wrap(~sector) +
+    #geom_smooth(method="loess", se = FALSE)  +
+    #scale_y_continuous(limits = c(0, 140), breaks = c(0, 100)) +
+    theme(strip.text.x = element_text(size = 6)) +
+    ggtitle(str_c("Tasas de ", crime, "(", as.yearmon(min(df$date)), " - ",
+                  as.yearmon(max(df$date)), ")")) +
+    xlab("fecha") +
+    ylab("tasa") +
     theme(axis.text.x = element_text(angle = 60, hjust = 1))
 }
 
 plotSectorRates(date.sectores, "Homicide", "Homicidio doloso")
 ggsave(file.path("graphs", "total-sector-hom.png"), dpi = 100, width = 10, height = 7)
 
-plotSectorRates(date.sectores, "Robbery to a business with violence", "Robo a negocio C/V")
+plotSectorRates(date.sectores, "Robbery to a business with violence", "Robo a negocio C.V.")
 ggsave(file.path("graphs", "total-sector-rncv.png"), dpi = 100, width = 10, height = 7)
 
-plotSectorRates(date.sectores, "Car robbery with violence", "Robo de vehiculo automotor C/V")
+plotSectorRates(date.sectores, "Car robbery with violence", "Robo de vehiculo automotor C.V.")
 ggsave(file.path("graphs", "total-sector-rvcv.png"), dpi = 100, width = 10, height = 7)
 
-plotSectorRates(date.sectores, "Car robbery without violence", "Robo de vehiculo automotor S/V")
+plotSectorRates(date.sectores, "Car robbery without violence", "Robo de vehiculo automotor S.V.")
 ggsave(file.path("graphs", "total-sector-rvsv.png"), dpi = 100, width = 10, height = 7)
 
 plotSectorRates(date.sectores, "Rape", "Violacion")
 ggsave(file.path("graphs", "total-sector-viol.png"), dpi = 100, width = 10, height = 7)
+
+# Espanol
+
+plotSectorRates_es(date.sectores, "Homicidio doloso", "Homicidio doloso")
+ggsave(file.path("graphs", "total-sector-hom_es.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates_es(date.sectores, "Robo a negocio C.V.", "Robo a negocio C.V.")
+ggsave(file.path("graphs", "total-sector-rncv_es.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates_es(date.sectores, "Robo de vehiculo automotor C.V.", "Robo de vehiculo automotor C.V.")
+ggsave(file.path("graphs", "total-sector-rvcv_es.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates_es(date.sectores, "Robo de vehiculo automotor S.V.", "Robo de vehiculo automotor S.V.")
+ggsave(file.path("graphs", "total-sector-rvsv_es.png"), dpi = 100, width = 10, height = 7)
+
+plotSectorRates_es(date.sectores, "Violacion", "Violacion")
+ggsave(file.path("graphs", "total-sector-viol_es.png"), dpi = 100, width = 10, height = 7)
 
